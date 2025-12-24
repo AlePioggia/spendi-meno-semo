@@ -12,12 +12,13 @@
 
 ```mermaid
 erDiagram
-    EXPENSES {
+    TRANSACTIONS {
         uuid id PK
         uuid tenant_id
         uuid user_id
         uuid category_id
         text description
+        varchar expenseType
         decimal amount
         varchar currency
         date date
@@ -30,4 +31,4 @@ erDiagram
     }
 
     %% Relazioni
-    EXPENSES ||--o{ CATEGORIES : has
+    TRANSACTIONS ||--o{ CATEGORIES : has
