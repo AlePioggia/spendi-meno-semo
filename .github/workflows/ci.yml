@@ -22,11 +22,15 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Test
-        run: dotnet test --no-build --configuration Release
+      - name: Find and test all solutions
+        run: |
+          echo "Finding all .sln files..."
+          solutions=$(find . -name "*.sln")
+          for sln in $solutions; do
+            echo "Restoring $sln"
+            dotnet restore "$sln"
+            echo "Building $sln"
+            dotnet build "$sln" --no-restore --configuration Release
+            echo "Testing $sln"
+            dotnet test "$sln" --no-build --configuration Release
+          done
