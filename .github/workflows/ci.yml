@@ -22,8 +22,8 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-    -name: Restore and Test Expenses Solution
-    run: |
-      dotnet restore services/expenses/Expenses.slnx
-      dotnet build services/expenses/Expenses.slnx --no-restore --configuration Release
-      dotnet test services/expenses/Expenses.slnx --no-build --configuration Release
+      - name: Restore and Test Expenses Solution
+        run: |
+          dotnet restore services/expenses/Expenses.slnx
+          dotnet build services/expenses/Expenses.slnx --no-restore --configuration Release
+          dotnet test services/expenses/Expenses.slnx --no-build --configuration Release
