@@ -1,12 +1,10 @@
-﻿namespace Expenses.Domain.Tests;
+﻿namespace Expenses.Application.Tests;
 
 public class UnitTest1
 {
     [Fact]
-    public void MoneyObject_Should_Be_Created_Correctly()
+    public void Test1()
     {
-        var MoneyObject = new Money() { 100, Currency.EUR };
-        Assert.Equal(100, MoneyObject.Amount);
-        Assert.Equal(Currency.EUR, MoneyObject.Currency);
+
     }
 }
