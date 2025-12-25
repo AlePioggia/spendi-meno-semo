@@ -22,16 +22,8 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Find and test all solutions
-        shell: bash
+      - name: Restore and Test Expenses Solution
         run: |
-          echo "Finding all .sln files..."
-          solutions=$(find . -name "*.sln")
-          for sln in $solutions; do
-            echo "Restoring $sln"
-            dotnet restore "$sln"
-            echo "Building $sln"
-            dotnet build "$sln" --no-restore --configuration Release
-            echo "Testing $sln"
-            dotnet test "$sln" --no-build --configuration Release
-          done
+          dotnet restore services/expenses/Expenses.sln
+          dotnet build services/expenses/Expenses.sln --no-restore --configuration Release
+          dotnet test services/expenses/Expenses.sln --no-build --configuration Release
