@@ -7,13 +7,22 @@ namespace Expenses.Domain.Entities
 {
     public class Money
     {
-        public long Amount { get; set; }
+        public decimal Amount { get; set; }
         public Currency Currency { get; set; }
 
-        public Money(long amount, Currency currency)
+        public Money(long amount = 0, Currency currency = Currency.EUR)
         {
+            if (!IsPositiveAmount(amount))
+            {
+                throw new ArgumentException("Amount must be a positive value.");
+            } 
             Amount = amount;
             Currency = currency;
+        }
+
+        private bool IsPositiveAmount(decimal amount)
+        {
+            return amount >= 0;
         }
     }
 }
