@@ -23,6 +23,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Find and test all solutions
+        shell: bash
         run: |
           echo "Finding all .sln files..."
           solutions=$(find . -name "*.sln")
