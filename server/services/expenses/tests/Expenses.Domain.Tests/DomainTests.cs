@@ -6,7 +6,7 @@ namespace Expenses.Domain
     public class DomainTests
     {
         [Fact]
-        public void ExpenseObject_Should_Be_Created_Correctly()
+        public void TransactionObject_Should_Be_Created_Correctly()
         {
             Transaction expense = new Transaction
             {
@@ -31,6 +31,12 @@ namespace Expenses.Domain
             Assert.Equal(0, expense.CategoryId);
             Assert.True((DateTime.UtcNow - expense.Date).TotalSeconds < 5);
             Assert.True((DateTime.UtcNow - expense.CreatedAt).TotalSeconds < 5);
+        }
+
+        [Fact]
+        public void TransactionObject_Should_Throw_Exception_For_Negative_Amount()
+        {
+            Assert.Throws<ArgumentException>(() => new Money(-50, Currency.USD));
         }
     }
 }
