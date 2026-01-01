@@ -42,7 +42,7 @@ namespace Expenses.Application.Tests.queries.transactions
                 fakeId
             );
 
-            Transaction result = await handler.Handle(command, CancellationToken.None);
+            Transaction? result = await handler.Handle(command, CancellationToken.None);
 
             Assert.NotNull(result);
             Assert.Equal(transaction, result);
@@ -80,7 +80,7 @@ namespace Expenses.Application.Tests.queries.transactions
                 fakeId
             );
 
-            Transaction result = await handler.Handle(command, CancellationToken.None);
+            Transaction? result = await handler.Handle(command, CancellationToken.None);
 
             Assert.Null(result);
         }
