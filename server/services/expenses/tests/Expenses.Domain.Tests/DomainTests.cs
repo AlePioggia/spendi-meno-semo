@@ -38,5 +38,17 @@ namespace Expenses.Domain
         {
             Assert.Throws<ArgumentException>(() => new Money(-50, Currency.USD));
         }
+
+        [Fact]
+        public void CategoryObject_Should_Be_Created_Correctly()
+        {
+            Category category = new Category
+            {
+                Id = 1,
+                Description = "Food" 
+            };
+            Assert.Equal(1, category.Id);
+            Assert.Equal("Food", category.Description);
+        }
     }
 }
