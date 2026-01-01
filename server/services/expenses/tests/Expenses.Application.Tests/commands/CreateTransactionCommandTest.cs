@@ -1,0 +1,42 @@
+﻿using Expenses.Application.commands.transactions.createTransaction;
+using Expenses.Application.repositories;
+using Expenses.Domain.Entities;
+using Expenses.Domain.ValueObjects;
+using Moq;
+
+
+namespace Expenses.Application.Tests.commands
+{
+    public class CreateTransactionCommandTest
+    {
+        [Fact]
+        public async Task Handle_ShouldCreateATransactionCorrectly()
+        {
+            var repositoryMock = new Mock<IRepository<Transaction, long>>();
+            long fakeId = 1;
+
+            repositoryMock
+                .Setup(r => r.AddAsync(It.IsAny<Transaction>()))
+                .Callback<Transaction>(t => t.Id = fakeId)
+                .Returns(Task.CompletedTask);
+
+            var handler = new CreateTransactionHandler(repositoryMock.Object);
+
+            var command = new CreateTransactionCommand(
+                    "fake transaction",
+                    231,
+                    Currency.EUR,
+                    TransactionType.Expense,
+                    1,
+                    1,
+                    1,
+                    DateTime.Now
+            );
+
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            Assert.Equal(fakeId, result);
+            repositoryMock.Verify(r => r.AddAsync(It.IsAny<Transaction>()), Times.Once);
+        }
+    }
+}

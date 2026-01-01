@@ -10,7 +10,7 @@ namespace Expenses.Domain.Entities
         public decimal Amount { get; set; }
         public Currency Currency { get; set; }
 
-        public Money(long amount = 0, Currency currency = Currency.EUR)
+        public Money(decimal amount = 0, Currency currency = Currency.EUR)
         {
             if (!IsPositiveAmount(amount))
             {
