@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Expenses.Application.commands.categories
+{
+    public sealed record CreateCategoryCommand(
+        string name, 
+        string description,
+        long userId,
+        long tenantId,
+        DateTime createdAt
+    );
+}
