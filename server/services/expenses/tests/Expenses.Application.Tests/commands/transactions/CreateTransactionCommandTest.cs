@@ -5,7 +5,7 @@ using Expenses.Domain.ValueObjects;
 using Moq;
 
 
-namespace Expenses.Application.Tests.commands
+namespace Expenses.Application.Tests.commands.transactions
 {
     public class CreateTransactionCommandTest
     {
