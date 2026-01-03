@@ -15,7 +15,7 @@ namespace Expenses.Application.commands.transactions.createTransaction
             _repository = repository;
         }
 
-        public async Task<long> Handle(CreateTransactionCommand command, CancellationToken token)
+        public async Task Handle(CreateTransactionCommand command, CancellationToken token)
         {
             Money money = new Money(command.Amount, command.Currency);
 
@@ -32,8 +32,6 @@ namespace Expenses.Application.commands.transactions.createTransaction
             };
 
             await _repository.AddAsync(transaction);
-
-            return transaction.Id;
         }
     }
 }

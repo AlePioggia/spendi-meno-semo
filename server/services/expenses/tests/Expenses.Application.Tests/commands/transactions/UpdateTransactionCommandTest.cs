@@ -35,9 +35,8 @@ namespace Expenses.Application.Tests.commands.transactions
                 1
             );
 
-            var result = await handler.Handle(command);
-
-            Assert.True(result == 1);
+            await handler.Handle(command);
+            repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
         }
     }
 }

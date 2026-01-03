@@ -33,9 +33,8 @@ namespace Expenses.Application.Tests.commands.transactions
                     DateTime.Now
             );
 
-            var result = await handler.Handle(command, CancellationToken.None);
+            await handler.Handle(command, CancellationToken.None);
 
-            Assert.Equal(fakeId, result);
             repositoryMock.Verify(r => r.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
     }

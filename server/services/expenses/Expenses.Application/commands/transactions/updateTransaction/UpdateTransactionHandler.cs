@@ -15,7 +15,7 @@ namespace Expenses.Application.commands.transactions.updateTransaction
             _repository = repository;
         }
 
-        public async Task<long> Handle(UpdateTransactionCommand command)
+        public async Task Handle(UpdateTransactionCommand command)
         {
             Money money = new Money(command.amount);
 
@@ -32,8 +32,6 @@ namespace Expenses.Application.commands.transactions.updateTransaction
             };
 
             await _repository.UpdateAsync(transaction);
-
-            return transaction.Id;
         }
     }
 }
