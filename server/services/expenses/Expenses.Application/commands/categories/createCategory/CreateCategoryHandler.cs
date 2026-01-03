@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Expenses.Application.commands.categories
+namespace Expenses.Application.commands.categories.createCategory
 {
     public class CreateCategoryHandler
     {
