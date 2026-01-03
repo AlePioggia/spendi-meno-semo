@@ -45,10 +45,12 @@ namespace Expenses.Domain
             Category category = new Category
             {
                 Id = 1,
-                Description = "Food" 
+                Name = "Food",
+                Description = "Indicates money spent on food!",
+                CreatedAt = DateTime.UtcNow
             };
             Assert.Equal(1, category.Id);
-            Assert.Equal("Food", category.Description);
+            Assert.Equal("Indicates money spent on food!", category.Description);
         }
     }
 }
