@@ -30,6 +30,45 @@ namespace Expenses.Application.Tests.commands.category
                 await handler.Handle(command);
                 repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Category>()), Times.Once);
             }
+
+            [Fact]
+            public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
+            {
+                var validator = new DeleteCategoryCommandValidator();
+                DeleteCategoryCommand command = new DeleteCategoryCommand(
+                    -1,
+                    1,
+                    1
+                );
+                var result = validator.Validate(command);
+                Assert.False(result.IsValid);
+            }
+
+            [Fact]
+            public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()
+            {
+                var validator = new DeleteCategoryCommandValidator();
+                DeleteCategoryCommand command = new DeleteCategoryCommand(
+                    1,
+                    -1,
+                    1
+                );
+                var result = validator.Validate(command);
+                Assert.False(result.IsValid);
+            }
+
+            [Fact]
+            public async Task Handle_CommandShouldFailWhenCategoryIdIsLessThanZero()
+            {
+                var validator = new DeleteCategoryCommandValidator();
+                DeleteCategoryCommand command = new DeleteCategoryCommand(
+                    1,
+                    1,
+                    -1
+                );
+                var result = validator.Validate(command);
+                Assert.False(result.IsValid);
+            }
         }
     }
 }
