@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.commands.categories;
 using Expenses.Application.commands.categories.createCategory;
+using Expenses.Application.commands.transactions.createTransaction;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
 using Moq;
@@ -36,6 +37,42 @@ namespace Expenses.Application.Tests.commands.category
 
             repositoryMock.Verify(r => r.AddAsync(It.IsAny<Category>()), Times.Once);
 
-        } 
+        }
+
+        [Fact]
+        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
+        {
+            var validator = new CreateCategoryCommandValidator();
+
+            CreateCategoryCommand command = new CreateCategoryCommand(
+                "Food",
+                "Indicates money spent on food!",
+                -1,
+                1,
+                DateTime.UtcNow
+            );
+
+            var result = validator.Validate(command);
+
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()
+        {
+            var validator = new CreateCategoryCommandValidator();
+
+            CreateCategoryCommand command = new CreateCategoryCommand(
+                "Food",
+                "Indicates money spent on food!",
+                1,
+                -1,
+                DateTime.UtcNow
+            );
+
+            var result = validator.Validate(command);
+
+            Assert.False(result.IsValid);
+        }
     }
 }
