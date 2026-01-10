@@ -38,5 +38,77 @@ namespace Expenses.Application.Tests.commands.transactions
             await handler.Handle(command);
             repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
         }
+
+        [Fact]
+        public async Task Handle_ShouldNotUpdateIfIdIsInvalid()
+        {
+            var validator = new UpdateTransactionCommandValidator();
+            UpdateTransactionCommand command = new UpdateTransactionCommand(
+                0,
+                "transaction",
+                10,
+                TransactionType.Expense,
+                1,
+                DateTime.Now,
+                1,
+                1
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldNotUpdateIfTenantIdIsInvalid()
+        {
+            var validator = new UpdateTransactionCommandValidator();
+            UpdateTransactionCommand command = new UpdateTransactionCommand(
+                1,
+                "transaction",
+                10,
+                TransactionType.Expense,
+                -1,
+                DateTime.Now,
+                1,
+                1
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldNotUpdateIfUserIdIsInvalid()
+        {
+            var validator = new UpdateTransactionCommandValidator();
+            UpdateTransactionCommand command = new UpdateTransactionCommand(
+                1,
+                "transaction",
+                10,
+                TransactionType.Expense,
+                1,
+                DateTime.Now,
+                -1,
+                1
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldNotUpdateIfAmountIsInvalid()
+        {
+            var validator = new UpdateTransactionCommandValidator();
+            UpdateTransactionCommand command = new UpdateTransactionCommand(
+                1,
+                "transaction",
+                0,
+                TransactionType.Expense,
+                1,
+                DateTime.Now,
+                1,
+                1
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
     }
 }
