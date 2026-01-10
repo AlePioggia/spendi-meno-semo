@@ -1,4 +1,5 @@
 ﻿using Expenses.Domain.Entities;
+using Expenses.Domain.ValueObjects;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Expenses.Application.commands.transactions.updateTransaction
         string description,
         decimal amount,
         TransactionType transactionType,
+        Currency currency,
         long categoryId,
         DateTime date,
         long userId,
