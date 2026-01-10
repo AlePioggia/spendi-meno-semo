@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,5 +9,5 @@ namespace Expenses.Application.commands.categories.deleteCategory
         long id,
         long userId,
         long tenantId
-    );
+    ): IRequest;
 }

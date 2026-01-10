@@ -1,12 +1,13 @@
 ﻿using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Expenses.Application.commands.categories.createCategory
 {
-    public class CreateCategoryHandler
+    public class CreateCategoryHandler: IRequestHandler<CreateCategoryCommand>
     {
         private readonly IRepository<Category, long> _repository;
 

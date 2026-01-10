@@ -1,4 +1,5 @@
 ﻿using Expenses.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,5 +15,5 @@ namespace Expenses.Application.commands.transactions.updateTransaction
         DateTime date,
         long userId,
         long tenantId
-    );
+    ): IRequest;
 }

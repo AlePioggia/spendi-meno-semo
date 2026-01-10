@@ -1,12 +1,13 @@
 ﻿using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Expenses.Application.commands.transactions.createTransaction
 {
-    public class CreateTransactionHandler
+    public class CreateTransactionHandler: IRequestHandler<CreateTransactionCommand>
     {
         private readonly IRepository<Transaction, long> _repository;
 

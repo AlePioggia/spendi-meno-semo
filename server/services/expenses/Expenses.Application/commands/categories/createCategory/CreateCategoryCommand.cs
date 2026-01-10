@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,5 +11,5 @@ namespace Expenses.Application.commands.categories.createCategory
         long userId,
         long tenantId,
         DateTime createdAt
-    );
+    ): IRequest;
 }

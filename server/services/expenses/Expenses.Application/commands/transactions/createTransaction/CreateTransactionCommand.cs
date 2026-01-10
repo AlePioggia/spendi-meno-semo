@@ -1,5 +1,6 @@
 ﻿using Expenses.Domain.Entities;
 using Expenses.Domain.ValueObjects;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,5 +16,5 @@ namespace Expenses.Application.commands.transactions.createTransaction
         long TenantId,
         long CategoryId,
         DateTime Date            
-    );
+    ): IRequest;
 }

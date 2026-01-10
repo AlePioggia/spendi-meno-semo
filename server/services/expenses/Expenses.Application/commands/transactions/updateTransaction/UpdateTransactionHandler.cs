@@ -1,12 +1,13 @@
 ﻿using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Expenses.Application.commands.transactions.updateTransaction
 {
-    public class UpdateTransactionHandler
+    public class UpdateTransactionHandler: IRequestHandler<UpdateTransactionCommand>
     {
         private readonly IRepository<Transaction, long> _repository;
 
@@ -15,7 +16,7 @@ namespace Expenses.Application.commands.transactions.updateTransaction
             _repository = repository;
         }
 
-        public async Task Handle(UpdateTransactionCommand command)
+        public async Task Handle(UpdateTransactionCommand command, CancellationToken cancellationToken)
         {
             Money money = new Money(command.amount);
 
