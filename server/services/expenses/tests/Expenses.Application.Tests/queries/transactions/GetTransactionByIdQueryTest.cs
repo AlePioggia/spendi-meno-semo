@@ -84,5 +84,53 @@ namespace Expenses.Application.Tests.queries.transactions
 
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task Handle_ShouldNotValidateIfTransactionIdIsLessThanOne()
+        {
+            var validator = new GetTransactionByIdQueryValidator();
+
+            var query = new GetTransactionByIdQuery(
+                -1,
+                1,
+                1
+            );
+
+            var result = await validator.ValidateAsync(query);
+
+            Assert.False(result.IsValid);
+            Assert.Contains(result.Errors, error => error.PropertyName == nameof(GetTransactionByIdQuery.TransactionId));
+        }
+
+        [Fact]
+        public async Task Handle_ShouldNotValidateIfTenantIdIsLessThanOne()
+        {
+            var validator = new GetTransactionByIdQueryValidator();
+
+            var query = new GetTransactionByIdQuery(
+                -1,
+                1,
+                1
+            );
+
+            var result = await validator.ValidateAsync(query);
+
+            Assert.False(result.IsValid);
+            Assert.Contains(result.Errors, error => error.PropertyName == nameof(GetTransactionByIdQuery.TransactionId));
+        }
+
+        [Fact]
+        public async Task Handle_ShouldNotValidateIfUserIdIsLessThanOne()
+        {
+            var validator = new GetTransactionByIdQueryValidator();
+            var query = new GetTransactionByIdQuery(
+                1,
+                1,
+                -1
+            );
+            var result = await validator.ValidateAsync(query);
+            Assert.False(result.IsValid);
+            Assert.Contains(result.Errors, error => error.PropertyName == nameof(GetTransactionByIdQuery.UserId));
+        }
     }
 }
