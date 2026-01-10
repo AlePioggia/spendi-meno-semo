@@ -37,5 +37,77 @@ namespace Expenses.Application.Tests.commands.transactions
 
             repositoryMock.Verify(r => r.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
-    }
+
+        [Fact]
+        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
+        {
+            var validator = new CreateTransactionCommandValidator();
+            CreateTransactionCommand command = new CreateTransactionCommand(
+                "fake transaction",
+                231,
+                Currency.EUR,
+                TransactionType.Expense,
+                1,
+                -1,
+                1,
+                DateTime.Now
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()
+        {
+            var validator = new CreateTransactionCommandValidator();
+            CreateTransactionCommand command = new CreateTransactionCommand(
+                "fake transaction",
+                231,
+                Currency.EUR,
+                TransactionType.Expense,
+                -1,
+                1,
+                1,
+                DateTime.Now
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_CommandShouldFailWhenCategoryIdIsLessThanZero()
+        {
+            var validator = new CreateTransactionCommandValidator();
+            CreateTransactionCommand command = new CreateTransactionCommand(
+                "fake transaction",
+                231,
+                Currency.EUR,
+                TransactionType.Expense,
+                1,
+                1,
+                -1,
+                DateTime.Now
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task Handle_CommandShouldFailWhenAmountIsLessThanOrEqualToZero()
+        {
+            var validator = new CreateTransactionCommandValidator();
+            CreateTransactionCommand command = new CreateTransactionCommand(
+                "fake transaction",
+                0,
+                Currency.EUR,
+                TransactionType.Expense,
+                1,
+                1,
+                1,
+                DateTime.Now
+            );
+            var result = validator.Validate(command);
+            Assert.False(result.IsValid);
+        }
+    } 
 }
