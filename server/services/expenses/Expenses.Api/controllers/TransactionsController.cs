@@ -190,7 +190,7 @@ namespace Expenses.Api.controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteTransactionAsync(int id)
         {
             try
             {
@@ -198,7 +198,7 @@ namespace Expenses.Api.controllers
                 long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
 
                 await _mediator.Send(new DeleteTransactionCommand(id, userId, tenantId));
-                return NoContent();
+                return Ok(id);
             }
             catch (ValidationException ex)
             {
