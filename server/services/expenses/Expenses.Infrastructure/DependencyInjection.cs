@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Expenses.Infrastructure.persistence;
 using Expenses.Infrastructure.repositories;
+using Expenses.Infrastructure.persistence;
 
 namespace Expenses.Infrastructure
 {

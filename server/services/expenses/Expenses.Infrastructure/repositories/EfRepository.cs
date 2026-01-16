@@ -1,4 +1,6 @@
 ﻿using Expenses.Application.repositories;
+using Expenses.Infrastructure.persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,29 +10,41 @@ namespace Expenses.Infrastructure.repositories
     public class EfRepository<TEntity, TKey> : IRepository<TEntity, TKey>
         where TEntity : class
     {
-        public Task AddAsync(TEntity entity)
+        private readonly TransactionsDbContext _dbContext;
+        private readonly DbSet<TEntity> _dbSet;
+
+        public EfRepository(TransactionsDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+            _dbSet = dbContext.Set<TEntity>();
         }
 
-        public Task DeleteAsync(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            await _dbSet.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<List<TEntity>> GetAllAsync()
+        public async Task DeleteAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            _dbSet.Remove(entity);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<TEntity?> GetByIdAsync(TKey id)
+        public async Task<List<TEntity>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbSet.ToListAsync();
         }
 
-        public Task UpdateAsync(TEntity entity)
+        public async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FindAsync(id);
+        }
+
+        public async Task UpdateAsync(TEntity entity)
+        {
+            _dbSet.Update(entity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

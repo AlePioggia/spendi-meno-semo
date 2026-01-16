@@ -30,8 +30,10 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                long userId = long.Parse(User.FindFirst("sub")!.Value); 
-                long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                //long userId = long.Parse(User.FindFirst("sub")!.Value); 
+                //long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                long userId = 1;
+                long tenantId = 1;
 
                 var query = new GetTransactionsQuery(
                     userId,
@@ -70,8 +72,10 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                long userId = long.Parse(User.FindFirst("sub")!.Value);
-                long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                //long userId = long.Parse(User.FindFirst("sub")!.Value);
+                //long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                long userId = 1;
+                long tenantId = 1;
 
                 var query = new GetTransactionByIdQuery(
                     id,
@@ -110,8 +114,10 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                long userId = long.Parse(User.FindFirst("sub")!.Value);
-                long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                //long userId = long.Parse(User.FindFirst("sub")!.Value);
+                //long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                long userId = 1;
+                long tenantId = 1;
 
                 if (!Enum.TryParse<TransactionType>(request.TransactionType, true, out var expenseType))
                 {
@@ -136,7 +142,7 @@ namespace Expenses.Api.controllers
                 
                 await _mediator.Send(command);
 
-                return CreatedAtAction(nameof(GetTransactionAsync), command);
+                return Ok();
             } catch (ValidationException ex)
             {
                 return BadRequest(new { Errors = ex.Errors.Select(e => e.ErrorMessage) });
@@ -152,8 +158,10 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                long userId = long.Parse(User.FindFirst("sub")!.Value);
-                long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                //long userId = long.Parse(User.FindFirst("sub")!.Value);
+                //long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                long userId = 1;
+                long tenantId = 1;
 
                 if (!Enum.TryParse<TransactionType>(request.TransactionType, true, out var transactionType))
                 {
@@ -194,8 +202,10 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                long userId = long.Parse(User.FindFirst("sub")!.Value);
-                long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                //long userId = long.Parse(User.FindFirst("sub")!.Value);
+                //long tenantId = long.Parse(User.FindFirst("tenantId")!.Value);
+                long userId = 1;
+                long tenantId = 1;
 
                 await _mediator.Send(new DeleteTransactionCommand(id, userId, tenantId));
                 return Ok(id);
