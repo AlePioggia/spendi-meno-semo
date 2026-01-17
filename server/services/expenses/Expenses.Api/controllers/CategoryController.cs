@@ -1,0 +1,141 @@
+﻿using Expenses.Api.dto.request.category;
+using Expenses.Api.dto.request.transaction;
+using Expenses.Api.dto.response.transaction;
+using Expenses.Application.commands.categories.createCategory;
+using Expenses.Application.commands.categories.deleteCategory;
+using Expenses.Application.queries.categories.getCategories;
+using Expenses.Application.queries.categories.getCategoryById;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+
+namespace Expenses.Api.controllers
+{
+    [Route("api/category")]
+    [ApiController]
+    public class CategoryController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+
+        public CategoryController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetCategoryResponseDto>> GetCategoryByIdAsync(long id)
+        {
+            try
+            {
+                var query = new GetCategoryByIdQuery(id, 1, 1);
+                var category = await _mediator.Send(query);
+                if (category is null)
+                {
+                    return NotFound();
+                }
+                var responseDto = new GetCategoryResponseDto(
+                    category.Id,
+                    category.Name ?? "",
+                    category.Description ?? "",
+                    category.UserId,
+                    category.TenantId,
+                    category.CreatedAt
+                );
+                return Ok(responseDto);
+            }
+            catch (ValidationException vex)
+            {
+                return BadRequest("Validation errore" + vex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<GetCategoryResponseDto>>> GetCategoriesAsync()
+        {
+            try
+            {
+                var query = new GetCategoriesQuery(1, 1);
+                var categories = await _mediator.Send(query);
+                if (categories is null)
+                {
+                    return NotFound();
+                }
+                var responseDtos = categories.Select(category => new GetCategoryResponseDto(
+                    category.Id,
+                    category.Name ?? "",
+                    category.Description ?? "",
+                    category.UserId,
+                    category.TenantId,
+                    category.CreatedAt
+                )).ToList();
+                return Ok(responseDtos);
+            }
+            catch (ValidationException vex)
+            {
+                return BadRequest("Validation error" + vex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCategoryAsync([FromBody] CreateCategoryRequestDto request)
+        {
+            try
+            {
+                var command = new CreateCategoryCommand(
+                    request.Name,
+                    request.Description,
+                    1,
+                    1,
+                    DateTime.Now
+                );
+
+                await _mediator.Send(command);
+
+                return Ok(command);
+            }
+            catch (ValidationException vex)
+            {
+                return BadRequest("Validation error" + vex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTransactionAsync(int id)
+        {
+            try
+            {
+                long userId = 1;
+                long tenantId = 1;
+
+                await _mediator.Send(new DeleteCategoryCommand(
+                    id,
+                    userId,
+                    tenantId
+                ));
+                return Ok(id);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest("Validation error" + ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+    }
+}

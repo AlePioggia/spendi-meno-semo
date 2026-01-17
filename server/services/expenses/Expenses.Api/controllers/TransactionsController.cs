@@ -18,7 +18,7 @@ namespace Expenses.Api.controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-        IMediator _mediator;
+        private readonly IMediator _mediator;
 
         public TransactionsController(IMediator mediator)
         {
