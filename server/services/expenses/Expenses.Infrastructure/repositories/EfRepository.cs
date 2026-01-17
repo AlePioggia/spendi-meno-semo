@@ -33,12 +33,16 @@ namespace Expenses.Infrastructure.repositories
 
         public async Task<List<TEntity>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.
+                Where(entity => EF.Property<int>(entity, "Status") == 0)
+                .ToListAsync();
         }
 
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet
+                .Where(entity => EF.Property<int>(entity, "Status") == 0)
+                .FirstOrDefaultAsync(e => EF.Property<TKey>(e, "Id").Equals(id));
         }
 
         public async Task UpdateAsync(TEntity entity)
