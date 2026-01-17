@@ -1,0 +1,43 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-title class="login-title">Benvenuto</mat-card-title>
+
+    <app-input-field
+      label="Username"
+      [value]="username"
+      (valueChange)="username.set($event)"
+      class="login-input"
+    ></app-input-field>
+
+    <app-input-field
+      label="Password"
+      type="password"
+      [value]="password"
+      (valueChange)="password.set($event)"
+      class="login-input"
+    ></app-input-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="login()"
+      [disabled]="loading()"
+      class="login-button"
+    >
+      Login
+      @if (loading()) {
+        <mat-progress-spinner
+          mode="indeterminate"
+          diameter="20"
+          class="spinner"
+        ></mat-progress-spinner>
+      }
+
+    </button>
+
+    <p class="register-text">
+      Non hai un account? <a routerLink='/register' routerLinkActive="active">Registrati</a>
+    </p>
+  </mat-card>
+</div>
+

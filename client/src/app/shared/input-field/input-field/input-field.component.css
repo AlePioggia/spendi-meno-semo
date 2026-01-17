@@ -5,27 +5,18 @@
 .mat-form-field-appearance-fill .mat-form-field-flex {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
-  transition: background 0.3s, box-shadow 0.3s;
-}
-
-.mat-input-element {
-  color: #fff;
-  font-size: 1rem;
 }
 
 .mat-form-field-appearance-fill .mat-form-field-infix {
   padding: 0.6rem 0.75rem;
+  color: #fff;
 }
 
 .mat-form-field.mat-focused .mat-form-field-flex {
   background: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 
-.mat-form-field-label {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.mat-form-field.mat-focused .mat-form-field-label {
+.mat-input-element {
   color: #fff;
+  font-size: 1
 }

@@ -1,0 +1,9 @@
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>{{ label }}</mat-label>
+  <input
+    matInput
+    [type]="type"
+    [value]="value()"
+    (input)="valueChange.emit($event.target.value)"
+  />
+</mat-form-field>
