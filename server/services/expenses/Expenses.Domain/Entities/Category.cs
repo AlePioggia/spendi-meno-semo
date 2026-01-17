@@ -14,5 +14,11 @@ namespace Expenses.Domain.Entities
         public DateTime CreatedAt { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
             = new List<Transaction>();
+        public int Status { get; set; }
+
+        public void Delete()
+        {
+            Status = 1;
+        }
     }
 }

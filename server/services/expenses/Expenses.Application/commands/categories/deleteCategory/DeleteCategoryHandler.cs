@@ -18,15 +18,17 @@ namespace Expenses.Application.commands.categories.deleteCategory
 
         public async Task Handle(DeleteCategoryCommand command, CancellationToken ct)
         {
-            Category category = new Category
-            {
-                Id = command.id,
-                UserId = command.userId,
-                TenantId = command.tenantId
-            };
+            Category entity = await _repository.GetByIdAsync(
+                command.id
+            ) ?? new Category();
 
-            await _repository.DeleteAsync(
-                category
+            if (entity is null)
+            {
+                return;
+            }
+            entity.Delete();
+            await _repository.UpdateAsync(
+                entity
             );
         }
     }

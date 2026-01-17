@@ -13,9 +13,15 @@ namespace Expenses.Application.Tests.commands.category
         [Fact]
         public async Task Handle_ShouldDeleteAtransactionCorrectly()
         {
+            var category = new Category { Id = 1 };
             var repositoryMock = new Mock<IRepository<Category, long>>();
             repositoryMock
-                .Setup(r => r.DeleteAsync(It.IsAny<Category>()))
+                .Setup(r => r.GetByIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(category);
+
+            repositoryMock
+                .Setup(r => r.UpdateAsync(It.IsAny<Category>()))
+                .Callback<Category>(c => c.Status = 1)
                 .Returns(Task.CompletedTask);
 
             var handler = new DeleteCategoryHandler(repositoryMock.Object);
@@ -24,9 +30,11 @@ namespace Expenses.Application.Tests.commands.category
                 1,
                 1
             );
-
+            
             await handler.Handle(command, CancellationToken.None);
-            repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Category>()), Times.Once);
+
+            repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Category>()), Times.Once);
+            Assert.Equal(1, category.Status);
         }
 
         [Fact]

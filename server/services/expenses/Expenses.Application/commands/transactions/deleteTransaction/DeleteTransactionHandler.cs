@@ -17,14 +17,13 @@ namespace Expenses.Application.commands.transactions.deleteTransaction
 
         public async Task Handle(DeleteTransactionCommand command)
         {
-            var transaction = new Transaction
+            Transaction transaction = await _repository.GetByIdAsync(command.id) ?? new Transaction();
+            if (transaction.Id <= 0)
             {
-                Id = command.id,
-                UserId = command.userId,
-                TenantId = command.tenantId
-            };
-
-            await _repository.DeleteAsync(transaction);
+                return;
+            }
+            transaction.Delete();
+            await _repository.UpdateAsync(transaction);
         }
     }
 }

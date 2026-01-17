@@ -16,5 +16,10 @@ namespace Expenses.Domain.Entities
         public Category Category { get; set; } = default!;
         public DateTime Date { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int Status { get; set; }
+        public void Delete()
+        {
+            Status = 1;
+        }
     }
 }

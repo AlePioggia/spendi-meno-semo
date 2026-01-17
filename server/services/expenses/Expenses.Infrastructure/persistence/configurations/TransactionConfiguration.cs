@@ -56,6 +56,8 @@ namespace Expenses.Infrastructure.persistence.configurations
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(x => x.Status)
+                .IsRequired();
         }
     }
 }
