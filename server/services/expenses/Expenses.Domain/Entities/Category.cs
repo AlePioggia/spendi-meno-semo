@@ -12,5 +12,7 @@ namespace Expenses.Domain.Entities
         public long TenantId { get; set; }
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
+            = new List<Transaction>();
     }
 }

@@ -49,6 +49,13 @@ namespace Expenses.Infrastructure.persistence.configurations
 
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
+
+            builder
+                .HasOne(x => x.Category)
+                .WithMany(c => c.Transactions)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

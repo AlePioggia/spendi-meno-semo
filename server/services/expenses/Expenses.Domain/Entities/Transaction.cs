@@ -13,6 +13,7 @@ namespace Expenses.Domain.Entities
         public long UserId { get; set; }
         public long TenantId { get; set; }
         public long CategoryId { get; set; }
+        public Category Category { get; set; } = default!;
         public DateTime Date { get; set; }
         public DateTime CreatedAt { get; set; }
     }
