@@ -2,6 +2,8 @@ import { APP_INITIALIZER, ApplicationConfig, provideAppInitializer, provideBrows
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { keycloak } from './services/keycloak.service';
+import { authInterceptor } from './auth/auth.interceptor';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 export function initializeKeycloak() {
   return () =>
@@ -16,6 +18,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideAppInitializer(initializeKeycloak())
   ]
 };

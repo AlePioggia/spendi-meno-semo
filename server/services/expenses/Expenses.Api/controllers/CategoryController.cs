@@ -6,12 +6,14 @@ using Expenses.Application.commands.categories.deleteCategory;
 using Expenses.Application.queries.categories.getCategories;
 using Expenses.Application.queries.categories.getCategoryById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace Expenses.Api.controllers
 {
+    [Authorize]
     [Route("api/category")]
     [ApiController]
     public class CategoryController : ControllerBase

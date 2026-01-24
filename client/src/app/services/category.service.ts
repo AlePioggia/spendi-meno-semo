@@ -1,0 +1,27 @@
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { Observable } from "rxjs";
+import { CategoryRequestDto, CategoryResponseDto } from "../interfaces/category.interface";
+
+@Injectable({ providedIn: 'root' })
+export class CategoryService {
+  private http = inject(HttpClient); // Angular 21: inject() al posto del constructor
+
+  private apiUrl = 'http://localhost:5001/api/category';
+
+  getCategories(): Observable<CategoryResponseDto[]> {
+    return this.http.get<CategoryResponseDto[]>(this.apiUrl);
+  }
+
+  getCategoryById(id: number): Observable<CategoryResponseDto> {
+    return this.http.get<CategoryResponseDto>(`${this.apiUrl}/${id}`);
+  }
+
+  createCategory(category: CategoryRequestDto): Observable<CategoryResponseDto> {
+    return this.http.post<CategoryResponseDto>(this.apiUrl, category);
+  }
+
+  deleteCategory(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+}

@@ -6,6 +6,9 @@ import { InputFieldComponent } from '../../shared/input-field/input-field/input-
 import { inject } from '@angular/core';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { keycloak } from '../../services/keycloak.service';
+import { CategoryService } from '../../services/category.service';
+import { CategoryResponseDto } from '../../interfaces/category.interface';
 
 @Component({
   selector: 'app-login',
@@ -27,9 +30,26 @@ export class LoginPage {
 
   loading = signal(false);
 
+  private categoryService = inject(CategoryService);
+
   login() {
     if (!this.username() || !this.password()) {
       alert('Inserisci username e password!');
+
+      const fakeCategory = {
+        name: 'Categoria di test',
+        description: 'Descrizione di test'
+      }
+
+      this.categoryService.createCategory(fakeCategory).subscribe({
+        next: (fakeCategory: CategoryResponseDto) => {
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.loading.set(false);
+        }
+      });
+
       return;
     }
 
