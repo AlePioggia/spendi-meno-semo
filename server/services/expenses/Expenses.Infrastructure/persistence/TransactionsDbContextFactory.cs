@@ -11,9 +11,11 @@ namespace Expenses.Infrastructure.Persistence
     {
         public TransactionsDbContext CreateDbContext(string[] args)
         {
+            var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+
             var optionsBuilder = new DbContextOptionsBuilder<TransactionsDbContext>();
 
-            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TransactionsDb;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(connectionString);
 
             return new TransactionsDbContext(optionsBuilder.Options);
         }
