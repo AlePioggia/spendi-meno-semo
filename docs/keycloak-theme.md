@@ -6,6 +6,8 @@ This repo includes a custom Keycloak login theme matching the app UI.
 - `keycloak/themes/spendi-meno-semo/login/theme.properties`
 - `keycloak/themes/spendi-meno-semo/login/resources/css/login.css`
 
+Note: for Keycloak 21, the theme uses `parent=keycloak`.
+
 ## Enable in Docker
 The `docker-compose.yml` should mount `./keycloak/themes` into the Keycloak container at `/opt/keycloak/themes`.
 
@@ -21,3 +23,8 @@ Then restart Keycloak.
 After saving, open your app again; the Keycloak login page will use the new theme.
 
 If Keycloak caches the theme, restart the container.
+
+## Troubleshooting
+
+- If the theme does not appear in the dropdown, check container logs for theme load errors.
+- If changes to CSS do not show up, do a hard refresh (Ctrl+F5) and restart the `keycloak` container.

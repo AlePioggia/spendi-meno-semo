@@ -1,4 +1,3 @@
-/* Container coerente con le altre pagine */
 .transactions-container {
   display: flex;
   justify-content: center;

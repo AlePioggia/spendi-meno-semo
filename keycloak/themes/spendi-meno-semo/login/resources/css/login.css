@@ -27,16 +27,12 @@ body {
   margin: 0;
   padding: 24px 14px;
 }
-
-/* Works across Keycloak themes (PatternFly v4/v5 + legacy) */
 .login-pf,
 .login-pf-page,
 .pf-v5-c-login,
 .pf-c-login {
   background: transparent !important;
 }
-
-/* Center the whole page */
 .login-pf-page,
 .pf-v5-c-login,
 .pf-c-login {
@@ -45,8 +41,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
-/* Center the login card */
 .login-pf-page .card-pf,
 .pf-v5-c-login__main,
 .pf-c-login__main,
@@ -54,8 +48,6 @@ body {
 .pf-c-card {
   border-radius: var(--app-radius) !important;
 }
-
-/* Card surface */
 .login-pf-page .card-pf,
 .pf-v5-c-login__main,
 .pf-c-login__main {
@@ -69,8 +61,6 @@ body {
   box-shadow: var(--app-shadow), var(--app-shadow-soft) !important;
   overflow: hidden;
 }
-
-/* Make internal layout tighter */
 .login-pf-page .card-pf {
   padding: 0 !important;
 }
@@ -79,8 +69,6 @@ body {
 .pf-c-login__main {
   padding: 0 !important;
 }
-
-/* Brand header (logo + title) */
 .login-pf-page #kc-header,
 .login-pf-page #kc-header-wrapper,
 .pf-v5-c-login__header,
@@ -89,8 +77,6 @@ body {
   background: linear-gradient(180deg, #f8fafc, #ffffff) !important;
   border-bottom: 1px solid rgba(226, 232, 240, 0.95) !important;
 }
-
-/* Replace default Keycloak header text with our logo */
 .login-pf-page #kc-header-wrapper,
 .pf-v5-c-login__header,
 .pf-c-login__header {
@@ -120,16 +106,12 @@ body {
   color: var(--app-text) !important;
   letter-spacing: 0.2px;
 }
-
-/* Labels */
 #kc-form-login label,
 .pf-v5-c-form__label,
 .pf-c-form__label {
   color: var(--app-text) !important;
   font-weight: 600;
 }
-
-/* Inputs */
 #kc-form-login input[type="text"],
 #kc-form-login input[type="password"],
 #kc-form-login input[type="email"],
@@ -154,8 +136,6 @@ body {
   outline: none !important;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18) !important;
 }
-
-/* Primary button */
 #kc-login,
 .pf-v5-c-button.pf-m-primary,
 .pf-c-button.pf-m-primary,
@@ -175,15 +155,11 @@ body {
 .btn-primary:hover {
   background: var(--app-primary-700) !important;
 }
-
-/* Secondary/cancel-like buttons */
 .pf-v5-c-button,
 .pf-c-button,
 .btn {
   border-radius: 14px !important;
 }
-
-/* Links */
 #kc-info-wrapper a,
 #kc-registration a,
 .pf-v5-c-login__main a,
@@ -191,16 +167,12 @@ body {
   color: var(--app-primary) !important;
   font-weight: 700;
 }
-
-/* Subtle muted text */
 #kc-info-wrapper,
 #kc-registration,
 .pf-v5-c-helper-text,
 .pf-c-helper-text {
   color: var(--app-muted) !important;
 }
-
-/* Tighten spacing for the form area */
 #kc-content,
 #kc-content-wrapper,
 .login-pf-page .card-pf,
@@ -221,14 +193,10 @@ body {
   padding: 0 20px 18px !important;
   margin: 0 !important;
 }
-
-/* Reduce the width of the language selector/footer blocks if present */
 #kc-locale,
 #kc-info-wrapper {
   padding: 10px 20px 18px !important;
 }
-
-/* Alerts */
 .pf-v5-c-alert,
 .pf-c-alert,
 .alert {

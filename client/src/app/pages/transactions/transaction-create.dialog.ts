@@ -11,7 +11,7 @@ import { CreateTransactionRequestDto, TransactionType } from '../../interfaces/t
 
 export interface TransactionCreateDialogData {
   categories: CategoryResponseDto[];
-  initialDate: string; // YYYY-MM-DD
+  initialDate: string;
 }
 
 @Component({
