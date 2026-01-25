@@ -11,7 +11,8 @@ namespace Expenses.Infrastructure.Persistence
     {
         public TransactionsDbContext CreateDbContext(string[] args)
         {
-            var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+            //var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+            var connectionString = "Server=localhost,1433;Database=TransactionsDb;User Id=sa;Password=StrongPassw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True";
 
             var optionsBuilder = new DbContextOptionsBuilder<TransactionsDbContext>();
 

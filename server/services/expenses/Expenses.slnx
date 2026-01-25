@@ -1,11 +1,35 @@
 <Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Docker" />
+    <BuildType Name="local" />
+    <BuildType Name="Release" />
+  </Configurations>
   <Folder Name="/tests/">
-    <Project Path="tests/Expenses.Application.Tests/Expenses.Application.Tests.csproj" />
-    <Project Path="tests/Expenses.Architecture.Tests/Expenses.Architecture.Tests.csproj" />
-    <Project Path="tests/Expenses.Domain.Tests/Expenses.Domain.Tests.csproj" />
+    <Project Path="tests/Expenses.Application.Tests/Expenses.Application.Tests.csproj">
+      <BuildType Solution="Docker|*" Project="Release" />
+      <BuildType Solution="local|*" Project="Release" />
+    </Project>
+    <Project Path="tests/Expenses.Architecture.Tests/Expenses.Architecture.Tests.csproj">
+      <BuildType Solution="Docker|*" Project="Release" />
+      <BuildType Solution="local|*" Project="Release" />
+    </Project>
+    <Project Path="tests/Expenses.Domain.Tests/Expenses.Domain.Tests.csproj">
+      <BuildType Solution="Docker|*" Project="Release" />
+      <BuildType Solution="local|*" Project="Release" />
+    </Project>
   </Folder>
   <Project Path="Expenses.Api/Expenses.Api.csproj" />
-  <Project Path="Expenses.Application/Expenses.Application.csproj" />
-  <Project Path="Expenses.Domain/Expenses.Domain.csproj" />
-  <Project Path="Expenses.Infrastructure/Expenses.Infrastructure.csproj" />
+  <Project Path="Expenses.Application/Expenses.Application.csproj">
+    <BuildType Solution="Docker|*" Project="Release" />
+    <BuildType Solution="local|*" Project="Release" />
+  </Project>
+  <Project Path="Expenses.Domain/Expenses.Domain.csproj">
+    <BuildType Solution="Docker|*" Project="Release" />
+    <BuildType Solution="local|*" Project="Release" />
+  </Project>
+  <Project Path="Expenses.Infrastructure/Expenses.Infrastructure.csproj">
+    <BuildType Solution="Docker|*" Project="Release" />
+    <BuildType Solution="local|*" Project="Release" />
+  </Project>
 </Solution>

@@ -12,7 +12,14 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://localhost:5116");
+var debug = false;
+
+if (debug)
+{
+    builder.WebHost.UseUrls("http://localhost:5116");
+}
+
+DotNetEnv.Env.Load();
 
 builder.Services.AddCors(options =>
 {
@@ -29,8 +36,14 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = "http://host.docker.internal:8080/realms/myapp";
-        //options.Authority = "http://localhost:8080/realms/myapp";
+
+        if (debug)
+        {
+            options.Authority = "http://localhost:8080/realms/myapp";
+        } else
+        {
+            options.Authority = "http://host.docker.internal:8080/realms/myapp";
+        }   
         options.RequireHttpsMetadata = false;
         options.RefreshOnIssuerKeyNotFound = true;
 
@@ -74,18 +87,31 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+if (debug)
+{
+    var connectionString = Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING") ?? "";
+    builder.Services.AddInfrastructure(connectionString);
+} else
+{
+    //var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "";
+    //builder.Services.AddInfrastructure(connectionString);
+    builder.Services.AddInfrastructure(builder.Configuration);
+}
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<TransactionsDbContext>();
-//    db.Database.Migrate();
-//}
+if (!debug)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<TransactionsDbContext>();
+        db.Database.Migrate();
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
