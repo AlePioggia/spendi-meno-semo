@@ -12,7 +12,7 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var debug = false;
+var debug = true;
 
 if (debug)
 {

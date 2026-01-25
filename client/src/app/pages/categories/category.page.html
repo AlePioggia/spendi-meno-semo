@@ -1,0 +1,51 @@
+<div class="categories-container">
+
+  <mat-card class="categories-card">
+
+    <!-- Header card con titolo e pulsante + -->
+    <div class="card-header">
+      <h2>Categorie</h2>
+      <button
+        mat-fab
+        color="primary"
+        class="add-button"
+        (click)="openCreateDialog()"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <!-- Tabella tipo griglia -->
+    <table mat-table [dataSource]="categories()" class="categories-table">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Descrizione</th>
+        <td mat-cell *matCellDef="let c">{{ c.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Creato il</th>
+        <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Azioni</th>
+        <td mat-cell *matCellDef="let c">
+          <button mat-icon-button color="warn" class="delete-button" (click)="deleteCategory(c.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+    </table>
+
+  </mat-card>
+
+</div>
