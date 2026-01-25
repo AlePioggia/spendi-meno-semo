@@ -9,25 +9,19 @@
 
 ## Diagramma (high level)
 
-```mermaid
 flowchart LR
   U[Utente / Browser]
 
-  U -->|HTTP :4200| W[Web UI (Angular build)
-  container: client]
+  U -->|HTTP 4200| W[Web UI (Angular build)\ncontainer: client]
 
-  U -->|REST :5001| E[Expenses API
-  container: expenses-service]
+  U -->|REST 5001| E[Expenses API\ncontainer: expenses-service]
 
-  U -->|OIDC :8080| K[Keycloak
-  container: keycloak]
+  U -->|OIDC 8080| K[Keycloak\ncontainer: keycloak]
 
-  E -->|JDBC (app-network)| MSSQL[(SQL Server
-  container: sqlserver)]
+  E -->|JDBC (app-network)| MSSQL[(SQL Server\ncontainer: sqlserver)]
 
-  K -->|JDBC (app-network)| PG[(PostgreSQL
-  container: keycloak-postgres)]
-```
+  K -->|JDBC (app-network)| PG[(PostgreSQL\ncontainer: keycloak-postgres)]
+
 
 Nota importante: il frontend gira nel **browser**, quindi le chiamate API/OIDC partono dal browser verso le porte esposte sull’host (non “da container a container”).
 
