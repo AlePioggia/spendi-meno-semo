@@ -13,15 +13,20 @@
 flowchart LR
   U[Utente / Browser]
 
-  U -->|HTTP GET http://localhost:4200| N[Nginx static (Angular build)<br/>container: client<br/>host:4200 -> container:80]
+  U -->|HTTP :4200| W[Web UI (Angular build)
+  container: client]
 
-  U -->|REST API calls| E[Expenses API<br/>container: expenses-service<br/>host:5001 -> container:8080]
+  U -->|REST :5001| E[Expenses API
+  container: expenses-service]
 
-  U -->|OIDC login| K[Keycloak<br/>container: keycloak<br/>host:8080 -> container:8080]
+  U -->|OIDC :8080| K[Keycloak
+  container: keycloak]
 
-  E -->|JDBC (docker network)| MSSQL[(SQL Server<br/>container: sqlserver<br/>host:1433 -> container:1433)]
+  E -->|JDBC (app-network)| MSSQL[(SQL Server
+  container: sqlserver)]
 
-  K -->|JDBC (docker network)| PG[(PostgreSQL<br/>container: keycloak-postgres<br/>host:5432 -> container:5432)]
+  K -->|JDBC (app-network)| PG[(PostgreSQL
+  container: keycloak-postgres)]
 ```
 
 Nota importante: il frontend gira nel **browser**, quindi le chiamate API/OIDC partono dal browser verso le porte esposte sull’host (non “da container a container”).
