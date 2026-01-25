@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { CategoryService } from '../../services/category.service';
 import { TransactionService } from '../../services/transaction.service';
@@ -42,7 +43,8 @@ type DayVm = {
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ]
 })
 export class TransactionsPage {

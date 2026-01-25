@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { CategoryService } from '../../services/category.service';
 import {
@@ -34,6 +35,7 @@ import { CategoryCreateDialog } from './category-create.dialog';
     MatCardModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatTooltipModule,
     InputFieldComponent
   ]
 })

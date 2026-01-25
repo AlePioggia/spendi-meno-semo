@@ -7,10 +7,24 @@
       </div>
 
       <div class="header-actions">
-        <button mat-icon-button (click)="prevMonth()" aria-label="Mese precedente">
+        <button
+          mat-icon-button
+          (click)="prevMonth()"
+          aria-label="Mese precedente"
+          matTooltip="Mese precedente"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
           <mat-icon>chevron_left</mat-icon>
         </button>
-        <button mat-icon-button (click)="nextMonth()" aria-label="Mese successivo">
+        <button
+          mat-icon-button
+          (click)="nextMonth()"
+          aria-label="Mese successivo"
+          matTooltip="Mese successivo"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
           <mat-icon>chevron_right</mat-icon>
         </button>
 
@@ -20,6 +34,9 @@
           class="add-button"
           (click)="openCreateDialogForMonth()"
           aria-label="Aggiungi transazione"
+          matTooltip="Nuova transazione"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -83,7 +100,15 @@
                 <div class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
                   {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
                 </div>
-                <button mat-icon-button color="warn" (click)="deleteTransaction(tx.id)" aria-label="Elimina">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteTransaction(tx.id)"
+                  aria-label="Elimina"
+                  matTooltip="Elimina transazione"
+                  matTooltipPosition="left"
+                  matTooltipShowDelay="250"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>

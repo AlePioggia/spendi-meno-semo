@@ -6,7 +6,16 @@
         <div class="subtitle">Gestisci le categorie</div>
       </div>
 
-      <button mat-fab color="primary" class="add-button" (click)="openCreateDialog()">
+      <button
+        mat-fab
+        color="primary"
+        class="add-button"
+        (click)="openCreateDialog()"
+        aria-label="Aggiungi categoria"
+        matTooltip="Nuova categoria"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+      >
         <mat-icon>add</mat-icon>
       </button>
     </div>
@@ -30,7 +39,16 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Azioni</th>
         <td mat-cell *matCellDef="let c">
-          <button mat-icon-button color="warn" class="delete-button" (click)="deleteCategory(c.id)">
+          <button
+            mat-icon-button
+            color="warn"
+            class="delete-button"
+            (click)="deleteCategory(c.id)"
+            aria-label="Elimina categoria"
+            matTooltip="Elimina categoria"
+            matTooltipPosition="left"
+            matTooltipShowDelay="250"
+          >
             <mat-icon>delete</mat-icon>
           </button>
         </td>
