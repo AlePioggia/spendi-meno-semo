@@ -24,6 +24,7 @@ import { MatListModule } from "@angular/material/list";
           <h3>Menu</h3>
         </div>
         <mat-nav-list>
+          <a mat-list-item routerLink="/transactions" routerLinkActive="active">Transazioni</a>
           <a mat-list-item routerLink="/categories" routerLinkActive="active">Categorie</a>
           <a mat-list-item routerLink="/login" routerLinkActive="active">Login</a>
         </mat-nav-list>

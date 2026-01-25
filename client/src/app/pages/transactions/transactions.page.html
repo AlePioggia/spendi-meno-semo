@@ -1,0 +1,100 @@
+<div class="transactions-container">
+  <mat-card class="transactions-card">
+    <div class="card-header">
+      <div class="title">
+        <h2>Transazioni</h2>
+        <div class="subtitle">Planner mensile · {{ monthLabel() }}</div>
+      </div>
+
+      <div class="header-actions">
+        <button mat-icon-button (click)="prevMonth()" aria-label="Mese precedente">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button (click)="nextMonth()" aria-label="Mese successivo">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+        <button
+          mat-fab
+          color="primary"
+          class="add-button"
+          (click)="openCreateDialogForMonth()"
+          aria-label="Aggiungi transazione"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="month-summary">
+      <div class="summary-item">
+        <span class="label">Entrate</span>
+        <span class="value income">{{ monthIncome() | number:'1.2-2' }} €</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">Spese</span>
+        <span class="value expense">{{ monthExpense() | number:'1.2-2' }} €</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">Saldo</span>
+        <span class="value" [class.positive]="monthBalance() >= 0" [class.negative]="monthBalance() < 0">
+          {{ monthBalance() | number:'1.2-2' }} €
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="loading()" class="loading">
+      <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+    </div>
+
+    <div class="days" *ngIf="!loading()">
+      <div class="day" *ngFor="let d of days()">
+        <div class="day-left">
+          <div class="day-number">{{ d.day }}</div>
+          <div class="day-meta">
+            <div class="weekday">{{ d.weekday }}</div>
+            <div class="date">{{ d.key }}</div>
+          </div>
+        </div>
+
+        <div class="day-right">
+          <div class="day-top">
+            <div class="day-total" [class.positive]="dayBalance(d.key) >= 0" [class.negative]="dayBalance(d.key) < 0">
+              {{ dayBalance(d.key) | number:'1.2-2' }} €
+            </div>
+
+            <button mat-stroked-button class="day-add" (click)="openCreateDialogForDay(d.key)">
+              <mat-icon>add</mat-icon>
+              <span>Aggiungi</span>
+            </button>
+          </div>
+
+          <div class="tx-list" *ngIf="transactionsByDay().get(d.key)?.length; else empty">
+            <div class="tx" *ngFor="let tx of transactionsByDay().get(d.key)!">
+              <div class="tx-main">
+                <div class="tx-title">
+                  <span class="cat">{{ categoryName(tx.categoryId) }}</span>
+                  <span class="desc">{{ tx.description || '—' }}</span>
+                </div>
+                <div class="tx-sub">{{ tx.expenseType === 'Expense' ? 'Spesa' : 'Entrata' }}</div>
+              </div>
+
+              <div class="tx-right">
+                <div class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
+                  {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
+                </div>
+                <button mat-icon-button color="warn" (click)="deleteTransaction(tx.id)" aria-label="Elimina">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #empty>
+            <div class="empty">Nessuna transazione</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>
