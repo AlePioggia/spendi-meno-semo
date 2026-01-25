@@ -5,9 +5,9 @@ import { CategoryRequestDto, CategoryResponseDto } from "../interfaces/category.
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private http = inject(HttpClient); // Angular 21: inject() al posto del constructor
+  private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5001/api/category';
+  private apiUrl = 'http://localhost:5116/api/category';
 
   getCategories(): Observable<CategoryResponseDto[]> {
     return this.http.get<CategoryResponseDto[]>(this.apiUrl);

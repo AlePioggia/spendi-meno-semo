@@ -68,6 +68,8 @@ services:
     depends_on:
       - postgres
     command: start-dev
+    volumes:
+      - keycloak_data:/opt/keycloak/data
     networks:
       - app-network
 
@@ -87,6 +89,7 @@ services:
 volumes:
   postgres_data:
   sqlserver_data:
+  keycloak_data:
 
 networks:
   app-network:
