@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { RouterOutlet } from "@angular/router";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { FooterComponent } from "./footer.component";
 import { HeaderComponent } from "./header.component";
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -13,6 +13,8 @@ import { MatListModule } from "@angular/material/list";
     MatSidenavModule,
     MatToolbarModule,
     MatListModule,
+    RouterLink,
+    RouterLinkActive,
     RouterOutlet,
     HeaderComponent,
     FooterComponent
@@ -26,7 +28,6 @@ import { MatListModule } from "@angular/material/list";
         <mat-nav-list>
           <a mat-list-item routerLink="/transactions" routerLinkActive="active">Transazioni</a>
           <a mat-list-item routerLink="/categories" routerLinkActive="active">Categorie</a>
-          <a mat-list-item routerLink="/login" routerLinkActive="active">Login</a>
         </mat-nav-list>
       </mat-sidenav>
 

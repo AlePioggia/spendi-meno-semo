@@ -1,21 +1,15 @@
 <div class="categories-container">
-
   <mat-card class="categories-card">
-
-    <!-- Header card con titolo e pulsante + -->
     <div class="card-header">
-      <h2>Categorie</h2>
-      <button
-        mat-fab
-        color="primary"
-        class="add-button"
-        (click)="openCreateDialog()"
-      >
+      <div class="title">
+        <h2>Categorie</h2>
+        <div class="subtitle">Gestisci le categorie</div>
+      </div>
+
+      <button mat-fab color="primary" class="add-button" (click)="openCreateDialog()">
         <mat-icon>add</mat-icon>
       </button>
     </div>
-
-    <!-- Tabella tipo griglia -->
     <table mat-table [dataSource]="categories()" class="categories-table">
 
       <ng-container matColumnDef="name">
@@ -45,7 +39,5 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
     </table>
-
   </mat-card>
-
 </div>

@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   signal
 } from '@angular/core';
@@ -14,12 +13,10 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { CategoryService } from '../../services/category.service';
 import {
-  CategoryRequestDto,
   CategoryResponseDto
 } from '../../interfaces/category.interface';
 
 import { InputFieldComponent } from '../../shared/input-field/input-field/input-field.component';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CategoryCreateDialog } from './category-create.dialog';
 
@@ -37,8 +34,7 @@ import { CategoryCreateDialog } from './category-create.dialog';
     MatCardModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    InputFieldComponent,
-    RouterLink
+    InputFieldComponent
   ]
 })
 export class CategoryPage {
@@ -63,7 +59,6 @@ export class CategoryPage {
     this.categoryService.deleteCategory(id).subscribe(() => this.load());
   }
 
-  /** --- NUOVO: apre il dialog per creare una categoria --- */
   openCreateDialog() {
     const dialogRef = this.dialog.open(CategoryCreateDialog, {
       width: '420px'
