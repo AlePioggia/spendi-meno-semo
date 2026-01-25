@@ -70,6 +70,7 @@ services:
     command: start-dev
     volumes:
       - keycloak_data:/opt/keycloak/data
+      - ./keycloak/themes:/opt/keycloak/themes
     networks:
       - app-network
 

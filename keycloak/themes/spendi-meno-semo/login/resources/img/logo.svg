@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="28" viewBox="0 0 140 28" fill="none">
+  <rect x="0.5" y="0.5" width="27" height="27" rx="9" fill="#3B82F6"/>
+  <path d="M9 14.2l4 4 8-10" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="38" y="19" font-family="Inter, Roboto, Arial, sans-serif" font-size="14" font-weight="800" fill="#111827">spendi-meno-semo</text>
+</svg>
