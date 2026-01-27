@@ -39,12 +39,33 @@
   font-weight: 800;
   text-transform: capitalize;
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.month-badge:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.month-badge:active {
+  transform: translateY(0);
 }
 
 .month-badge mat-icon {
   font-size: 18px;
   width: 18px;
   height: 18px;
+}
+
+.month-picker-field {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .title h2 {
@@ -425,7 +446,7 @@
 .tx-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 780px;
+  min-width: 820px;
 }
 
 .tx-table thead th {
@@ -518,7 +539,7 @@
 
 .amt-range {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(90px, 1fr) minmax(90px, 1fr);
   gap: 6px;
 }
 
@@ -555,16 +576,26 @@
 }
 
 .tx-table .col-cat {
-  width: 150px;
+  width: 140px;
 }
 
 .tx-table .col-type {
-  width: 90px;
+  width: 80px;
 }
 
 .tx-table .col-amt {
-  width: 150px;
+  width: 220px;
   text-align: right;
+}
+
+@media (max-width: 900px) {
+  .tx-table {
+    min-width: 760px;
+  }
+
+  .amt-range {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tx-table .col-actions {

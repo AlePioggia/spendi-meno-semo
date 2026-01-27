@@ -6,10 +6,10 @@
         <div class="subtitle">Planner mensile</div>
       </div>
 
-      <div class="month-badge" aria-label="Mese selezionato">
+      <button class="month-badge" type="button" aria-label="Seleziona mese" (click)="monthPicker.open()">
         <mat-icon>calendar_month</mat-icon>
         <span>{{ monthLabel() }}</span>
-      </div>
+      </button>
 
       <div class="header-actions">
         <button
@@ -47,6 +47,16 @@
         </button>
       </div>
     </div>
+
+    <mat-form-field class="month-picker-field" appearance="fill">
+      <mat-label>Mese</mat-label>
+      <input matInput [matDatepicker]="monthPicker" [value]="month()" readonly />
+      <mat-datepicker
+        #monthPicker
+        startView="multi-year"
+        (monthSelected)="selectMonth($event, monthPicker)"
+      ></mat-datepicker>
+    </mat-form-field>
 
     <div class="month-summary">
       <div class="summary-item">
@@ -147,9 +157,9 @@
               <div class="filter-wrap">
                 <input
                   class="filter"
+                  type="date"
                   [value]="tableFilterDate()"
                   (input)="tableFilterDate.set(($any($event.target).value || '').toString())"
-                  placeholder="es. 27/01"
                   aria-label="Filtra per data"
                 />
                 <button

@@ -9,7 +9,11 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -43,7 +47,11 @@ type DayVm = {
     CommonModule,
     MatCardModule,
     MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatTooltipModule
@@ -340,6 +348,11 @@ export class TransactionsPage {
   nextMonth() {
     const m = this.month();
     this.month.set(new Date(m.getFullYear(), m.getMonth() + 1, 1));
+  }
+
+  selectMonth(selected: Date, datepicker: { close: () => void }) {
+    this.month.set(new Date(selected.getFullYear(), selected.getMonth(), 1));
+    datepicker.close();
   }
 
   openCreateDialogForMonth() {
