@@ -48,17 +48,21 @@ import { MatListModule } from "@angular/material/list";
     }
 
     .sidenav {
-      width: 220px;
+      width: 190px;
       background-color: #1f2937;
       color: #f9fafb;
     }
 
     .sidenav-header {
-      padding: 24px 16px;
-      font-size: 1.2rem;
+      padding: 14px 14px;
+      font-size: 1rem;
       font-weight: 600;
       color: #ffffff;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    :host ::ng-deep .sidenav .mat-mdc-list-item {
+      --mdc-list-list-item-one-line-container-height: 40px;
     }
 
     :host ::ng-deep .sidenav a.mat-mdc-list-item .mdc-list-item__primary-text {
@@ -80,7 +84,7 @@ import { MatListModule } from "@angular/material/list";
     }
 
     .main-content {
-      padding: 24px 16px;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -92,7 +96,7 @@ import { MatListModule } from "@angular/material/list";
       display: flex;
       justify-content: center;
       width: 100%;
-      padding: 24px 0;
+      padding: 16px 0;
       box-sizing: border-box;
     }
 
@@ -103,7 +107,7 @@ import { MatListModule } from "@angular/material/list";
 
     @media (max-width: 768px) {
       .page {
-        padding: 16px 0;
+        padding: 12px 0;
       }
     }
   `]

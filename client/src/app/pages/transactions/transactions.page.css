@@ -70,6 +70,42 @@
   margin-bottom: 18px;
 }
 
+.view-options {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 14px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle.toggle-on {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.toggle:disabled {
+  opacity: 0.55;
+}
+
+.no-days {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px dashed #d1d5db;
+  color: #6b7280;
+  font-size: 13px;
+}
+
 .summary-item {
   display: flex;
   flex-direction: column;
@@ -271,6 +307,148 @@
   color: #9ca3af;
 }
 
+/* Compact view */
+.transactions-card.compact {
+  padding: 18px;
+}
+
+.transactions-card.compact .month-summary {
+  margin-bottom: 12px;
+}
+
+.transactions-card.compact .view-options {
+  margin-bottom: 10px;
+  padding: 6px 10px;
+}
+
+.transactions-card.compact .days {
+  gap: 8px;
+}
+
+.transactions-card.compact .day {
+  padding: 10px;
+  gap: 10px;
+  border-radius: 12px;
+}
+
+.transactions-card.compact .day {
+  grid-template-columns: 96px 1fr;
+}
+
+.transactions-card.compact .day-number {
+  width: 38px;
+  height: 38px;
+  font-size: 14px;
+}
+
+.transactions-card.compact .tx-list {
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.transactions-card.compact .tx {
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.transactions-card.compact .tx-sub {
+  display: none;
+}
+
+.transactions-card.compact .day-meta .date {
+  display: none;
+}
+
+/* Table view (Excel-like) */
+.table-wrap {
+  width: 100%;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 780px;
+}
+
+.tx-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  color: #111827;
+  font-weight: 800;
+  font-size: 12px;
+  text-align: left;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.tx-table td {
+  border-bottom: 1px solid #eef2f7;
+  padding: 6px 10px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.tx-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.tx-table .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.tx-table .col-date {
+  width: 110px;
+}
+
+.tx-table .col-cat {
+  width: 150px;
+}
+
+.tx-table .col-type {
+  width: 90px;
+}
+
+.tx-table .col-amt {
+  width: 150px;
+  text-align: right;
+}
+
+.tx-table .col-actions {
+  width: 44px;
+}
+
+.tx-table .desc-cell {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-table .amt-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tx-table .actions-cell {
+  text-align: right;
+}
+
+.tx-table tfoot td {
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: none;
+  font-weight: 800;
+}
+
 @media (max-width: 768px) {
   .transactions-card {
     padding: 18px;
@@ -286,5 +464,9 @@
 
   .day-left {
     justify-content: flex-start;
+  }
+
+  .view-options {
+    gap: 10px;
   }
 }

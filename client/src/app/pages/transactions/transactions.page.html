@@ -1,5 +1,5 @@
 <div class="transactions-container">
-  <mat-card class="transactions-card">
+  <mat-card class="transactions-card compact">
     <div class="card-header">
       <div class="title">
         <h2>Transazioni</h2>
@@ -60,12 +60,110 @@
       </div>
     </div>
 
+    <div class="view-options" *ngIf="!loading()">
+      <button
+        mat-stroked-button
+        type="button"
+        class="toggle"
+        [class.toggle-on]="tableView()"
+        (click)="tableView.set(!tableView())"
+        matTooltip="Alterna vista tabella/lista"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+      >
+        <mat-icon>{{ tableView() ? 'table_rows' : 'view_list' }}</mat-icon>
+        <span>{{ tableView() ? 'Tabella' : 'Lista' }}</span>
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
+        class="toggle"
+        [class.toggle-on]="showOnlyDaysWithTransactions()"
+        (click)="showOnlyDaysWithTransactions.set(!showOnlyDaysWithTransactions())"
+        matTooltip="Nasconde i giorni senza transazioni"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+        [disabled]="tableView()"
+      >
+        <mat-icon>{{ showOnlyDaysWithTransactions() ? 'filter_alt' : 'filter_alt_off' }}</mat-icon>
+        <span>Solo giorni con transazioni</span>
+      </button>
+    </div>
+
     <div *ngIf="loading()" class="loading">
       <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
     </div>
 
-    <div class="days" *ngIf="!loading()">
-      <div class="day" *ngFor="let d of days()">
+    <!-- TABLE VIEW -->
+    <div class="table-wrap" *ngIf="!loading() && tableView()">
+      <div class="no-days" *ngIf="transactionsForMonthSorted().length === 0">
+        Nessuna transazione nel mese.
+      </div>
+
+      <table class="tx-table" *ngIf="transactionsForMonthSorted().length > 0">
+        <thead>
+          <tr>
+            <th class="col-date">Data</th>
+            <th class="col-cat">Categoria</th>
+            <th>Descrizione</th>
+            <th class="col-type">Tipo</th>
+            <th class="col-amt">Importo</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="tx-row"
+            *ngFor="let tx of transactionsForMonthSorted()"
+            [class.income-row]="tx.expenseType === 'Income'"
+            [class.expense-row]="tx.expenseType === 'Expense'"
+          >
+            <td class="mono">{{ tx.date }}</td>
+            <td><span class="cat">{{ categoryName(tx.categoryId) }}</span></td>
+            <td class="desc-cell">{{ tx.description || '—' }}</td>
+            <td>{{ tx.expenseType === 'Expense' ? 'Spesa' : 'Entrata' }}</td>
+            <td class="amt-cell">
+              <span class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
+                {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteTransaction(tx.id)"
+                aria-label="Elimina"
+                matTooltip="Elimina transazione"
+                matTooltipPosition="left"
+                matTooltipShowDelay="250"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="totals">
+            <td colspan="4">Totale mese</td>
+            <td class="amt-cell">
+              <span class="amount" [class.income]="monthBalance() >= 0" [class.expense]="monthBalance() < 0">
+                {{ monthBalance() | number:'1.2-2' }} €
+              </span>
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div class="days" *ngIf="!loading() && !tableView()">
+      <div class="no-days" *ngIf="daysToRender().length === 0">
+        Nessuna transazione nel mese.
+      </div>
+
+      <div class="day" *ngFor="let d of daysToRender()">
         <div class="day-left">
           <div class="day-number">{{ d.day }}</div>
           <div class="day-meta">

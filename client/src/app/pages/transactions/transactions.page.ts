@@ -57,6 +57,9 @@ export class TransactionsPage {
   month = signal(new Date(this.today.getFullYear(), this.today.getMonth(), 1));
   loading = signal(false);
 
+  tableView = signal(false);
+  showOnlyDaysWithTransactions = signal(false);
+
   categories = signal<CategoryResponseDto[]>([]);
   allTransactions = signal<TransactionResponseDto[]>([]);
 
@@ -82,6 +85,16 @@ export class TransactionsPage {
       const d = this.toLocalDate(tx.date);
       return d >= start && d <= end;
     });
+  });
+
+  transactionsForMonthSorted = computed(() => {
+    const list = [...this.transactionsForMonth()];
+    list.sort((a, b) => {
+      const byDate = this.toLocalDate(a.date).getTime() - this.toLocalDate(b.date).getTime();
+      if (byDate !== 0) return byDate;
+      return this.toLocalDate(a.createdAt).getTime() - this.toLocalDate(b.createdAt).getTime();
+    });
+    return list;
   });
 
   transactionsByDay = computed(() => {
@@ -119,6 +132,14 @@ export class TransactionsPage {
       });
     }
     return out;
+  });
+
+  daysToRender = computed<DayVm[]>(() => {
+    const allDays = this.days();
+    if (!this.showOnlyDaysWithTransactions()) return allDays;
+
+    const byDay = this.transactionsByDay();
+    return allDays.filter(d => (byDay.get(d.key)?.length ?? 0) > 0);
   });
 
   monthIncome = computed(() =>

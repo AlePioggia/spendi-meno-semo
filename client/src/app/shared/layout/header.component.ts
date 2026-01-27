@@ -21,13 +21,14 @@ import { MatToolbarModule } from "@angular/material/toolbar";
       color: #111827;
       border-bottom: 1px solid #e5e7eb;
       box-shadow: 0 2px 10px rgba(17, 24, 39, 0.06);
+      height: 52px;
     }
 
     .toolbar-inner {
       width: 100%;
       max-width: 1100px;
       margin: 0 auto;
-      padding: 0 16px;
+      padding: 0 12px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -37,6 +38,7 @@ import { MatToolbarModule } from "@angular/material/toolbar";
     .brand {
       font-weight: 700;
       letter-spacing: 0.2px;
+      font-size: 14px;
     }
   `]
 })
