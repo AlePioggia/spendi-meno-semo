@@ -4,6 +4,7 @@ import { routes } from './app.routes';
 import { keycloak } from './services/keycloak.service';
 import { authInterceptor } from './auth/auth.interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 export function initializeKeycloak() {
   return () =>
@@ -19,6 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideNativeDateAdapter(),
     provideAppInitializer(initializeKeycloak())
   ]
 };

@@ -22,7 +22,8 @@ import {
 } from '../../interfaces/transaction.interface';
 import {
   TransactionCreateDialog,
-  TransactionCreateDialogData
+  TransactionCreateDialogData,
+  TransactionDialogResult
 } from './transaction-create.dialog';
 
 type DayVm = {
@@ -53,6 +54,17 @@ export class TransactionsPage {
   private readonly dialog = inject(MatDialog);
 
   private readonly today = new Date();
+  private readonly italianLongDateFormatter = new Intl.DateTimeFormat('it-IT', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  private readonly italianNumericDateFormatter = new Intl.DateTimeFormat('it-IT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 
   month = signal(new Date(this.today.getFullYear(), this.today.getMonth(), 1));
   loading = signal(false);
@@ -169,6 +181,14 @@ export class TransactionsPage {
     return match?.name ?? `#${categoryId}`;
   }
 
+  formatDayLong(value: unknown): string {
+    return this.italianLongDateFormatter.format(this.toLocalDate(value));
+  }
+
+  formatDayNumeric(value: unknown): string {
+    return this.italianNumericDateFormatter.format(this.toLocalDate(value));
+  }
+
   prevMonth() {
     const m = this.month();
     this.month.set(new Date(m.getFullYear(), m.getMonth() - 1, 1));
@@ -188,22 +208,47 @@ export class TransactionsPage {
     this.openCreateDialog(dayKey);
   }
 
-  private openCreateDialog(initialDate: string) {
-    const data: TransactionCreateDialogData = {
+  openEditDialog(tx: TransactionResponseDto) {
+    const initialDate = this.toDayKey(tx.date);
+    this.openDialog({
       categories: this.categories(),
-      initialDate
-    };
+      initialDate,
+      mode: 'edit',
+      transaction: tx
+    });
+  }
 
+  private openCreateDialog(initialDate: string) {
+    this.openDialog({
+      categories: this.categories(),
+      initialDate,
+      mode: 'create'
+    });
+  }
+
+  private openDialog(data: TransactionCreateDialogData) {
     const dialogRef = this.dialog.open(TransactionCreateDialog, {
       width: '440px',
       data
     });
 
-    dialogRef.afterClosed().subscribe((result: CreateTransactionRequestDto | undefined) => {
+    dialogRef.afterClosed().subscribe((result: TransactionDialogResult | undefined) => {
       if (!result) return;
 
       this.loading.set(true);
-      this.transactionService.createTransaction(result).subscribe({
+
+      if (result.mode === 'create') {
+        this.transactionService.createTransaction(result.request).subscribe({
+          next: () => {
+            this.loadTransactions();
+            this.loading.set(false);
+          },
+          error: () => this.loading.set(false)
+        });
+        return;
+      }
+
+      this.transactionService.updateTransaction(result.id, result.request).subscribe({
         next: () => {
           this.loadTransactions();
           this.loading.set(false);

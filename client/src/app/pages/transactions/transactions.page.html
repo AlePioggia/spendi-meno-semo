@@ -3,7 +3,12 @@
     <div class="card-header">
       <div class="title">
         <h2>Transazioni</h2>
-        <div class="subtitle">Planner mensile · {{ monthLabel() }}</div>
+        <div class="subtitle">Planner mensile</div>
+      </div>
+
+      <div class="month-badge" aria-label="Mese selezionato">
+        <mat-icon>calendar_month</mat-icon>
+        <span>{{ monthLabel() }}</span>
       </div>
 
       <div class="header-actions">
@@ -45,16 +50,16 @@
 
     <div class="month-summary">
       <div class="summary-item">
-        <span class="label">Entrate</span>
+        <span class="label"><mat-icon>arrow_upward</mat-icon> Entrate</span>
         <span class="value income">{{ monthIncome() | number:'1.2-2' }} €</span>
       </div>
       <div class="summary-item">
-        <span class="label">Spese</span>
+        <span class="label"><mat-icon>arrow_downward</mat-icon> Spese</span>
         <span class="value expense">{{ monthExpense() | number:'1.2-2' }} €</span>
       </div>
       <div class="summary-item">
-        <span class="label">Saldo</span>
-        <span class="value" [class.positive]="monthBalance() >= 0" [class.negative]="monthBalance() < 0">
+        <span class="label"><mat-icon>account_balance_wallet</mat-icon> Saldo</span>
+        <span class="value balance" [class.positive]="monthBalance() >= 0" [class.negative]="monthBalance() < 0">
           {{ monthBalance() | number:'1.2-2' }} €
         </span>
       </div>
@@ -119,7 +124,7 @@
             [class.income-row]="tx.expenseType === 'Income'"
             [class.expense-row]="tx.expenseType === 'Expense'"
           >
-            <td class="mono">{{ tx.date }}</td>
+            <td class="mono">{{ formatDayNumeric(tx.date) }}</td>
             <td><span class="cat">{{ categoryName(tx.categoryId) }}</span></td>
             <td class="desc-cell">{{ tx.description || '—' }}</td>
             <td>{{ tx.expenseType === 'Expense' ? 'Spesa' : 'Entrata' }}</td>
@@ -129,6 +134,16 @@
               </span>
             </td>
             <td class="actions-cell">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(tx)"
+                aria-label="Modifica"
+                matTooltip="Modifica transazione"
+                matTooltipPosition="left"
+                matTooltipShowDelay="250"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
               <button
                 mat-icon-button
                 color="warn"
@@ -168,7 +183,7 @@
           <div class="day-number">{{ d.day }}</div>
           <div class="day-meta">
             <div class="weekday">{{ d.weekday }}</div>
-            <div class="date">{{ d.key }}</div>
+            <div class="date">{{ formatDayLong(d.key) }}</div>
           </div>
         </div>
 
@@ -198,6 +213,16 @@
                 <div class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
                   {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
                 </div>
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(tx)"
+                  aria-label="Modifica"
+                  matTooltip="Modifica transazione"
+                  matTooltipPosition="left"
+                  matTooltipShowDelay="250"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
                 <button
                   mat-icon-button
                   color="warn"
