@@ -18,6 +18,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { CategoryResponseDto } from '../../interfaces/category.interface';
 import {
   CreateTransactionRequestDto,
+  TransactionType,
   TransactionResponseDto
 } from '../../interfaces/transaction.interface';
 import {
@@ -72,6 +73,16 @@ export class TransactionsPage {
   tableView = signal(false);
   showOnlyDaysWithTransactions = signal(false);
 
+  tableFilterDate = signal('');
+  tableFilterCategory = signal('');
+  tableFilterDescription = signal('');
+  tableFilterType = signal<'All' | TransactionType>('All');
+  tableFilterAmountMin = signal('');
+  tableFilterAmountMax = signal('');
+
+  tableSortField = signal<'date' | 'category' | 'description' | 'type' | 'amount'>('date');
+  tableSortDir = signal<'asc' | 'desc'>('asc');
+
   categories = signal<CategoryResponseDto[]>([]);
   allTransactions = signal<TransactionResponseDto[]>([]);
 
@@ -108,6 +119,138 @@ export class TransactionsPage {
     });
     return list;
   });
+
+  filteredTransactionsForMonth = computed(() => {
+    const dateFilter = this.normalize(this.tableFilterDate());
+    const categoryFilter = this.normalize(this.tableFilterCategory());
+    const descriptionFilter = this.normalize(this.tableFilterDescription());
+    const typeFilter = this.tableFilterType();
+
+    const minStr = this.tableFilterAmountMin().trim();
+    const maxStr = this.tableFilterAmountMax().trim();
+
+    const min = minStr.length ? Number(minStr) : NaN;
+    const max = maxStr.length ? Number(maxStr) : NaN;
+    const hasMin = minStr.length > 0 && Number.isFinite(min);
+    const hasMax = maxStr.length > 0 && Number.isFinite(max);
+
+    return this.transactionsForMonthSorted().filter(tx => {
+      if (typeFilter !== 'All' && tx.expenseType !== typeFilter) return false;
+
+      if (dateFilter) {
+        const dateText = this.normalize(this.formatDayNumeric(tx.date));
+        const dateKey = this.normalize(this.toDayKey(tx.date));
+        if (!dateText.includes(dateFilter) && !dateKey.includes(dateFilter)) return false;
+      }
+
+      if (categoryFilter) {
+        const cat = this.normalize(this.categoryName(tx.categoryId));
+        if (!cat.includes(categoryFilter)) return false;
+      }
+
+      if (descriptionFilter) {
+        const desc = this.normalize(tx.description ?? '');
+        if (!desc.includes(descriptionFilter)) return false;
+      }
+
+      const amount = Number(tx.amount);
+      if (hasMin && amount < min) return false;
+      if (hasMax && amount > max) return false;
+
+      return true;
+    });
+  });
+
+  tableRows = computed(() => {
+    const list = [...this.filteredTransactionsForMonth()];
+    const field = this.tableSortField();
+    const dir = this.tableSortDir();
+    const mul = dir === 'asc' ? 1 : -1;
+
+    const compareString = (a: string, b: string) => a.localeCompare(b, 'it-IT', { sensitivity: 'base' });
+
+    list.sort((a, b) => {
+      if (field === 'date') {
+        const byDate = this.toLocalDate(a.date).getTime() - this.toLocalDate(b.date).getTime();
+        if (byDate !== 0) return byDate * mul;
+        const byCreated = this.toLocalDate(a.createdAt).getTime() - this.toLocalDate(b.createdAt).getTime();
+        return byCreated * mul;
+      }
+
+      if (field === 'amount') {
+        const byAmount = (Number(a.amount) - Number(b.amount)) * mul;
+        if (byAmount !== 0) return byAmount;
+        return (this.toLocalDate(a.date).getTime() - this.toLocalDate(b.date).getTime()) * mul;
+      }
+
+      if (field === 'category') {
+        return compareString(this.categoryName(a.categoryId), this.categoryName(b.categoryId)) * mul;
+      }
+
+      if (field === 'description') {
+        return compareString(a.description ?? '', b.description ?? '') * mul;
+      }
+
+      // type
+      return compareString(a.expenseType, b.expenseType) * mul;
+    });
+
+    return list;
+  });
+
+  tableFilteredBalance = computed(() =>
+    this.filteredTransactionsForMonth().reduce((sum, t) => {
+      const amount = Number(t.amount);
+      return t.expenseType === 'Income' ? sum + amount : sum - amount;
+    }, 0)
+  );
+
+  tableSortIcon(field: 'date' | 'category' | 'description' | 'type' | 'amount'): string {
+    if (this.tableSortField() !== field) return 'unfold_more';
+    return this.tableSortDir() === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  toggleTableSort(field: 'date' | 'category' | 'description' | 'type' | 'amount') {
+    if (this.tableSortField() !== field) {
+      this.tableSortField.set(field);
+      this.tableSortDir.set('asc');
+      return;
+    }
+    this.tableSortDir.set(this.tableSortDir() === 'asc' ? 'desc' : 'asc');
+  }
+
+  clearTableFilterDate() {
+    this.tableFilterDate.set('');
+  }
+
+  clearTableFilterCategory() {
+    this.tableFilterCategory.set('');
+  }
+
+  clearTableFilterDescription() {
+    this.tableFilterDescription.set('');
+  }
+
+  clearTableFilterType() {
+    this.tableFilterType.set('All');
+  }
+
+  clearTableFilterAmountMin() {
+    this.tableFilterAmountMin.set('');
+  }
+
+  clearTableFilterAmountMax() {
+    this.tableFilterAmountMax.set('');
+  }
+
+  clearTableFilters() {
+    this.tableFilterDate.set('');
+    this.tableFilterCategory.set('');
+    this.tableFilterDescription.set('');
+    this.tableFilterType.set('All');
+    this.tableFilterAmountMin.set('');
+    this.tableFilterAmountMax.set('');
+  }
 
   transactionsByDay = computed(() => {
     const map = new Map<string, TransactionResponseDto[]>();
@@ -313,5 +456,9 @@ export class TransactionsPage {
     }
 
     return new Date();
+  }
+
+  private normalize(value: unknown): string {
+    return String(value ?? '').trim().toLowerCase();
   }
 }
