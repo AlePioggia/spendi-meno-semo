@@ -12,8 +12,6 @@ namespace Expenses.Application.commands.transactions.createTransaction
         decimal Amount,
         Currency Currency,
         TransactionType ExpenseType,
-        long UserId,
-        long TenantId,
         long CategoryId,
         DateTime Date            
     ): IRequest;

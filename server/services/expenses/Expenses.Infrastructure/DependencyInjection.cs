@@ -25,5 +25,17 @@ namespace Expenses.Infrastructure
 
             return services;
         }
+
+        public static IServiceCollection AddInfrastructure(
+            this IServiceCollection services,
+            string connectionString)
+        {
+            services.AddDbContext<TransactionsDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
+
+            return services;
+        }
     }
 }

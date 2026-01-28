@@ -51,7 +51,7 @@ namespace Expenses.Application.Tests.queries.transactions
 
             var handler = new GetTransactionsHandler(repositoryMock.Object);
 
-            var command = new GetTransactionsQuery(1, 1);
+            var command = new GetTransactionsQuery();
 
 
             List<Transaction>? result = await handler.Handle(command, CancellationToken.None);
@@ -74,33 +74,13 @@ namespace Expenses.Application.Tests.queries.transactions
 
             var handler = new GetTransactionsHandler(repositoryMock.Object);
 
-            var command = new GetTransactionsQuery(1, 1);
+            var command = new GetTransactionsQuery();
 
             List<Transaction>? result = await handler.Handle(command, CancellationToken.None);
 
             Assert.NotNull(result);
             Assert.Equal(transactions, result);
             Assert.True(transactions == result);
-        }
-
-        [Fact]
-        public async Task Handle_ShouldCorrectlyReturnNullWhenTenantIsNotThere()
-        {
-            var repositoryMock = new Mock<IRepository<Transaction, long>>();
-
-            List<Transaction> transactions = new List<Transaction>();
-
-            repositoryMock
-                .Setup(r => r.GetAllAsync())
-                .ReturnsAsync(transactions);
-
-            var handler = new GetTransactionsHandler(repositoryMock.Object);
-
-            var command = new GetTransactionsQuery(-1, -1);
-
-            List<Transaction>? result = await handler.Handle(command, CancellationToken.None);
-
-            Assert.Null(result);
         }
     }
 }

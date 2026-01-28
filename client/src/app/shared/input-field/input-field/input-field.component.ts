@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class InputFieldComponent {
   @Input() label = '';
-  @Input() type: 'text' | 'password' = 'text';
+  @Input() type: 'text' | 'password' | 'number' | 'date' = 'text';
 
   @Input() value!: Signal<string>;
   @Output() valueChange = new EventEmitter<string>();

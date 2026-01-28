@@ -18,10 +18,7 @@ namespace Expenses.Application.commands.categories.deleteCategory
 
         public async Task Handle(DeleteCategoryCommand command, CancellationToken ct)
         {
-            Category entity = await _repository.GetByIdAsync(
-                command.id
-            ) ?? new Category();
-
+            Category? entity = await _repository.GetByIdAsync(command.id);
             if (entity is null)
             {
                 return;

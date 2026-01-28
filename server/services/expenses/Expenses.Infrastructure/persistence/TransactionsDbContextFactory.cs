@@ -1,4 +1,5 @@
 ﻿using Expenses.Infrastructure.persistence;
+using Expenses.Application.contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System;
@@ -11,11 +12,21 @@ namespace Expenses.Infrastructure.Persistence
     {
         public TransactionsDbContext CreateDbContext(string[] args)
         {
+            //var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+            var connectionString = "Server=localhost,1433;Database=TransactionsDb;User Id=sa;Password=StrongPassw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True";
+
             var optionsBuilder = new DbContextOptionsBuilder<TransactionsDbContext>();
 
-            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TransactionsDb;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(connectionString);
 
-            return new TransactionsDbContext(optionsBuilder.Options);
+            // Design-time factory: use a default context so EF can build the model.
+            IExecutionContext executionContext = new Expenses.Application.contexts.ExecutionContext
+            {
+                TenantId = 1,
+                UserId = 1
+            };
+
+            return new TransactionsDbContext(optionsBuilder.Options, executionContext);
         }
     }
 }

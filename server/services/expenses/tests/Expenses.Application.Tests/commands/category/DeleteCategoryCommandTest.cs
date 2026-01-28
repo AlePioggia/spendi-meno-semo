@@ -26,8 +26,6 @@ namespace Expenses.Application.Tests.commands.category
 
             var handler = new DeleteCategoryHandler(repositoryMock.Object);
             var command = new DeleteCategoryCommand(
-                1,
-                1,
                 1
             );
             
@@ -38,38 +36,10 @@ namespace Expenses.Application.Tests.commands.category
         }
 
         [Fact]
-        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
+        public async Task Handle_CommandShouldFailWhenIdIsLessThanZero()
         {
             var validator = new DeleteCategoryCommandValidator();
             DeleteCategoryCommand command = new DeleteCategoryCommand(
-                -1,
-                1,
-                1
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()
-        {
-            var validator = new DeleteCategoryCommandValidator();
-            DeleteCategoryCommand command = new DeleteCategoryCommand(
-                1,
-                -1,
-                1
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenCategoryIdIsLessThanZero()
-        {
-            var validator = new DeleteCategoryCommandValidator();
-            DeleteCategoryCommand command = new DeleteCategoryCommand(
-                1,
-                1,
                 -1
             );
             var result = validator.Validate(command);

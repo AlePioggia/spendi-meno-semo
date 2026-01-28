@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.commands.categories;
 using Expenses.Application.commands.categories.createCategory;
+using Expenses.Application.contexts;
 using Expenses.Application.commands.transactions.createTransaction;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
@@ -17,6 +18,9 @@ namespace Expenses.Application.Tests.commands.category
         public async Task Handle_ShouldCreateACategory()
         {
             var repositoryMock = new Mock<IRepository<Category, long>>();
+            var executionContextMock = new Mock<IExecutionContext>();
+            executionContextMock.SetupGet(x => x.UserId).Returns(1);
+            executionContextMock.SetupGet(x => x.TenantId).Returns(1);
 
             repositoryMock
                 .Setup(r => r.AddAsync(It.IsAny<Category>()))
@@ -26,53 +30,15 @@ namespace Expenses.Application.Tests.commands.category
             var command = new CreateCategoryCommand(
                 "Food",
                 "Indicates money spent on food!",
-                1,
-                1,
                 DateTime.UtcNow
             );
 
-            var handler = new CreateCategoryHandler(repositoryMock.Object);
+            var handler = new CreateCategoryHandler(repositoryMock.Object, executionContextMock.Object);
 
             await handler.Handle(command, CancellationToken.None);
 
             repositoryMock.Verify(r => r.AddAsync(It.IsAny<Category>()), Times.Once);
 
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
-        {
-            var validator = new CreateCategoryCommandValidator();
-
-            CreateCategoryCommand command = new CreateCategoryCommand(
-                "Food",
-                "Indicates money spent on food!",
-                -1,
-                1,
-                DateTime.UtcNow
-            );
-
-            var result = validator.Validate(command);
-
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()
-        {
-            var validator = new CreateCategoryCommandValidator();
-
-            CreateCategoryCommand command = new CreateCategoryCommand(
-                "Food",
-                "Indicates money spent on food!",
-                1,
-                -1,
-                DateTime.UtcNow
-            );
-
-            var result = validator.Validate(command);
-
-            Assert.False(result.IsValid);
         }
     }
 }

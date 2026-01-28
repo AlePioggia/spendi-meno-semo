@@ -1,0 +1,61 @@
+<div class="categories-container">
+  <mat-card class="categories-card">
+    <div class="card-header">
+      <div class="title">
+        <h2>Categorie</h2>
+        <div class="subtitle">Gestisci le categorie</div>
+      </div>
+
+      <button
+        mat-fab
+        color="primary"
+        class="add-button"
+        (click)="openCreateDialog()"
+        aria-label="Aggiungi categoria"
+        matTooltip="Nuova categoria"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <table mat-table [dataSource]="categories()" class="categories-table">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Descrizione</th>
+        <td mat-cell *matCellDef="let c">{{ c.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Creato il</th>
+        <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Azioni</th>
+        <td mat-cell *matCellDef="let c">
+          <button
+            mat-icon-button
+            color="warn"
+            class="delete-button"
+            (click)="deleteCategory(c.id)"
+            aria-label="Elimina categoria"
+            matTooltip="Elimina categoria"
+            matTooltipPosition="left"
+            matTooltipShowDelay="250"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+    </table>
+  </mat-card>
+</div>

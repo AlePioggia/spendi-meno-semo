@@ -21,14 +21,7 @@ namespace Expenses.Application.queries.transactions.getTransactionById
             CancellationToken ct
         )
         {
-            Transaction? transaction = await _repository.GetByIdAsync(query.TransactionId);
-
-            if (transaction?.TenantId != query.TenantId || transaction.UserId != query.UserId)
-            {
-                return null;
-            }
-
-            return transaction;
+            return await _repository.GetByIdAsync(query.TransactionId);
         }
     }
 }

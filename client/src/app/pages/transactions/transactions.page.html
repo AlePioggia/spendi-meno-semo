@@ -1,0 +1,435 @@
+<div class="transactions-container">
+  <mat-card class="transactions-card compact">
+    <div class="card-header">
+      <div class="title">
+        <h2>Transazioni</h2>
+        <div class="subtitle">Planner mensile</div>
+      </div>
+
+      <button class="month-badge" type="button" aria-label="Seleziona mese" (click)="monthPicker.open()">
+        <mat-icon>calendar_month</mat-icon>
+        <span>{{ monthLabel() }}</span>
+      </button>
+
+      <div class="header-actions">
+        <button
+          mat-icon-button
+          (click)="prevMonth()"
+          aria-label="Mese precedente"
+          matTooltip="Mese precedente"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          (click)="nextMonth()"
+          aria-label="Mese successivo"
+          matTooltip="Mese successivo"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+        <button
+          mat-fab
+          color="primary"
+          class="add-button"
+          (click)="openCreateDialogForMonth()"
+          aria-label="Aggiungi transazione"
+          matTooltip="Nuova transazione"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-form-field class="month-picker-field" appearance="fill">
+      <mat-label>Mese</mat-label>
+      <input matInput [matDatepicker]="monthPicker" [value]="month()" readonly />
+      <mat-datepicker
+        #monthPicker
+        startView="multi-year"
+        (monthSelected)="selectMonth($event, monthPicker)"
+      ></mat-datepicker>
+    </mat-form-field>
+
+    <div class="month-summary">
+      <div class="summary-item">
+        <span class="label"><mat-icon>arrow_upward</mat-icon> Entrate</span>
+        <span class="value income">{{ monthIncome() | number:'1.2-2' }} €</span>
+      </div>
+      <div class="summary-item">
+        <span class="label"><mat-icon>arrow_downward</mat-icon> Spese</span>
+        <span class="value expense">{{ monthExpense() | number:'1.2-2' }} €</span>
+      </div>
+      <div class="summary-item">
+        <span class="label"><mat-icon>account_balance_wallet</mat-icon> Saldo</span>
+        <span class="value balance" [class.positive]="monthBalance() >= 0" [class.negative]="monthBalance() < 0">
+          {{ monthBalance() | number:'1.2-2' }} €
+        </span>
+      </div>
+    </div>
+
+    <div class="view-options" *ngIf="!loading()">
+      <button
+        mat-stroked-button
+        type="button"
+        class="toggle"
+        [class.toggle-on]="tableView()"
+        (click)="tableView.set(!tableView())"
+        matTooltip="Alterna vista tabella/lista"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+      >
+        <mat-icon>{{ tableView() ? 'table_rows' : 'view_list' }}</mat-icon>
+        <span>{{ tableView() ? 'Tabella' : 'Lista' }}</span>
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
+        class="toggle"
+        [class.toggle-on]="showOnlyDaysWithTransactions()"
+        (click)="showOnlyDaysWithTransactions.set(!showOnlyDaysWithTransactions())"
+        matTooltip="Nasconde i giorni senza transazioni"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+        [disabled]="tableView()"
+      >
+        <mat-icon>{{ showOnlyDaysWithTransactions() ? 'filter_alt' : 'filter_alt_off' }}</mat-icon>
+        <span>Solo giorni con transazioni</span>
+      </button>
+    </div>
+
+    <div *ngIf="loading()" class="loading">
+      <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+    </div>
+
+    <!-- TABLE VIEW -->
+    <div class="table-wrap" *ngIf="!loading() && tableView()">
+      <div class="no-days" *ngIf="transactionsForMonthSorted().length === 0">
+        Nessuna transazione nel mese.
+      </div>
+
+      <table class="tx-table" *ngIf="transactionsForMonthSorted().length > 0">
+        <thead>
+          <tr>
+            <th class="col-date">
+              <button type="button" class="sort-btn" (click)="toggleTableSort('date')">
+                <span>Data</span>
+                <mat-icon>{{ tableSortIcon('date') }}</mat-icon>
+              </button>
+            </th>
+            <th class="col-cat">
+              <button type="button" class="sort-btn" (click)="toggleTableSort('category')">
+                <span>Categoria</span>
+                <mat-icon>{{ tableSortIcon('category') }}</mat-icon>
+              </button>
+            </th>
+            <th>
+              <button type="button" class="sort-btn" (click)="toggleTableSort('description')">
+                <span>Descrizione</span>
+                <mat-icon>{{ tableSortIcon('description') }}</mat-icon>
+              </button>
+            </th>
+            <th class="col-type">
+              <button type="button" class="sort-btn" (click)="toggleTableSort('type')">
+                <span>Tipo</span>
+                <mat-icon>{{ tableSortIcon('type') }}</mat-icon>
+              </button>
+            </th>
+            <th class="col-amt">
+              <button type="button" class="sort-btn right" (click)="toggleTableSort('amount')">
+                <span>Importo</span>
+                <mat-icon>{{ tableSortIcon('amount') }}</mat-icon>
+              </button>
+            </th>
+            <th class="col-actions"></th>
+          </tr>
+
+          <tr class="filters">
+            <th>
+              <div class="filter-wrap">
+                <input
+                  class="filter"
+                  type="date"
+                  [value]="tableFilterDate()"
+                  (input)="tableFilterDate.set(($any($event.target).value || '').toString())"
+                  aria-label="Filtra per data"
+                />
+                <button
+                  *ngIf="tableFilterDate()"
+                  mat-icon-button
+                  type="button"
+                  class="clear-filter"
+                  (click)="clearTableFilterDate()"
+                  aria-label="Pulisci filtro data"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </th>
+            <th>
+              <div class="filter-wrap">
+                <input
+                  class="filter"
+                  [value]="tableFilterCategory()"
+                  (input)="tableFilterCategory.set(($any($event.target).value || '').toString())"
+                  placeholder="Categoria"
+                  aria-label="Filtra per categoria"
+                />
+                <button
+                  *ngIf="tableFilterCategory()"
+                  mat-icon-button
+                  type="button"
+                  class="clear-filter"
+                  (click)="clearTableFilterCategory()"
+                  aria-label="Pulisci filtro categoria"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </th>
+            <th>
+              <div class="filter-wrap">
+                <input
+                  class="filter"
+                  [value]="tableFilterDescription()"
+                  (input)="tableFilterDescription.set(($any($event.target).value || '').toString())"
+                  placeholder="Descrizione"
+                  aria-label="Filtra per descrizione"
+                />
+                <button
+                  *ngIf="tableFilterDescription()"
+                  mat-icon-button
+                  type="button"
+                  class="clear-filter"
+                  (click)="clearTableFilterDescription()"
+                  aria-label="Pulisci filtro descrizione"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </th>
+            <th>
+              <div class="filter-wrap">
+                <select
+                  class="filter"
+                  [value]="tableFilterType()"
+                  (change)="tableFilterType.set($any($event.target).value)"
+                  aria-label="Filtra per tipo"
+                >
+                  <option value="All">Tutti</option>
+                  <option value="Expense">Spesa</option>
+                  <option value="Income">Entrata</option>
+                </select>
+                <button
+                  *ngIf="tableFilterType() !== 'All'"
+                  mat-icon-button
+                  type="button"
+                  class="clear-filter"
+                  (click)="clearTableFilterType()"
+                  aria-label="Pulisci filtro tipo"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </th>
+            <th class="amt-filter">
+              <div class="amt-range">
+                <div class="filter-wrap">
+                  <input
+                    class="filter"
+                    type="number"
+                    inputmode="decimal"
+                    [value]="tableFilterAmountMin()"
+                    (input)="tableFilterAmountMin.set(($any($event.target).value || '').toString())"
+                    placeholder="Min"
+                    aria-label="Importo minimo"
+                  />
+                  <button
+                    *ngIf="tableFilterAmountMin()"
+                    mat-icon-button
+                    type="button"
+                    class="clear-filter"
+                    (click)="clearTableFilterAmountMin()"
+                    aria-label="Pulisci importo minimo"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+                <div class="filter-wrap">
+                  <input
+                    class="filter"
+                    type="number"
+                    inputmode="decimal"
+                    [value]="tableFilterAmountMax()"
+                    (input)="tableFilterAmountMax.set(($any($event.target).value || '').toString())"
+                    placeholder="Max"
+                    aria-label="Importo massimo"
+                  />
+                  <button
+                    *ngIf="tableFilterAmountMax()"
+                    mat-icon-button
+                    type="button"
+                    class="clear-filter"
+                    (click)="clearTableFilterAmountMax()"
+                    aria-label="Pulisci importo massimo"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </th>
+            <th class="filters-actions">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="clearTableFilters()"
+                aria-label="Pulisci filtri"
+                matTooltip="Pulisci filtri"
+                matTooltipPosition="left"
+                matTooltipShowDelay="250"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="no-results" *ngIf="tableRows().length === 0">
+            <td colspan="6">Nessun risultato con i filtri correnti.</td>
+          </tr>
+          <tr
+            class="tx-row"
+            *ngFor="let tx of tableRows()"
+            [class.income-row]="tx.expenseType === 'Income'"
+            [class.expense-row]="tx.expenseType === 'Expense'"
+          >
+            <td class="mono">{{ formatDayNumeric(tx.date) }}</td>
+            <td><span class="cat">{{ categoryName(tx.categoryId) }}</span></td>
+            <td class="desc-cell">{{ tx.description || '—' }}</td>
+            <td>{{ tx.expenseType === 'Expense' ? 'Spesa' : 'Entrata' }}</td>
+            <td class="amt-cell">
+              <span class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
+                {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button
+                mat-icon-button
+                (click)="openEditDialog(tx)"
+                aria-label="Modifica"
+                matTooltip="Modifica transazione"
+                matTooltipPosition="left"
+                matTooltipShowDelay="250"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteTransaction(tx.id)"
+                aria-label="Elimina"
+                matTooltip="Elimina transazione"
+                matTooltipPosition="left"
+                matTooltipShowDelay="250"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="totals">
+            <td colspan="4">Totale (filtrato)</td>
+            <td class="amt-cell">
+              <span class="amount" [class.income]="tableFilteredBalance() >= 0" [class.expense]="tableFilteredBalance() < 0">
+                {{ tableFilteredBalance() | number:'1.2-2' }} €
+              </span>
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div class="days" *ngIf="!loading() && !tableView()">
+      <div class="no-days" *ngIf="daysToRender().length === 0">
+        Nessuna transazione nel mese.
+      </div>
+
+      <div class="day" *ngFor="let d of daysToRender()">
+        <div class="day-left">
+          <div class="day-number">{{ d.day }}</div>
+          <div class="day-meta">
+            <div class="weekday">{{ d.weekday }}</div>
+            <div class="date">{{ formatDayLong(d.key) }}</div>
+          </div>
+        </div>
+
+        <div class="day-right">
+          <div class="day-top">
+            <div class="day-total" [class.positive]="dayBalance(d.key) >= 0" [class.negative]="dayBalance(d.key) < 0">
+              {{ dayBalance(d.key) | number:'1.2-2' }} €
+            </div>
+
+            <button mat-stroked-button class="day-add" (click)="openCreateDialogForDay(d.key)">
+              <mat-icon>add</mat-icon>
+              <span>Aggiungi</span>
+            </button>
+          </div>
+
+          <div class="tx-list" *ngIf="transactionsByDay().get(d.key)?.length; else empty">
+            <div class="tx" *ngFor="let tx of transactionsByDay().get(d.key)!">
+              <div class="tx-main">
+                <div class="tx-title">
+                  <span class="cat">{{ categoryName(tx.categoryId) }}</span>
+                  <span class="desc">{{ tx.description || '—' }}</span>
+                </div>
+                <div class="tx-sub">{{ tx.expenseType === 'Expense' ? 'Spesa' : 'Entrata' }}</div>
+              </div>
+
+              <div class="tx-right">
+                <div class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
+                  {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
+                </div>
+                <button
+                  mat-icon-button
+                  (click)="openEditDialog(tx)"
+                  aria-label="Modifica"
+                  matTooltip="Modifica transazione"
+                  matTooltipPosition="left"
+                  matTooltipShowDelay="250"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteTransaction(tx.id)"
+                  aria-label="Elimina"
+                  matTooltip="Elimina transazione"
+                  matTooltipPosition="left"
+                  matTooltipShowDelay="250"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #empty>
+            <div class="empty">Nessuna transazione</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

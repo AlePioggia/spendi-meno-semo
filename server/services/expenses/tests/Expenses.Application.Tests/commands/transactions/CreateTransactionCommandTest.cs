@@ -1,4 +1,5 @@
 ﻿using Expenses.Application.commands.transactions.createTransaction;
+using Expenses.Application.contexts;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
 using Expenses.Domain.ValueObjects;
@@ -13,6 +14,9 @@ namespace Expenses.Application.Tests.commands.transactions
         public async Task Handle_ShouldCreateATransactionCorrectly()
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
+            var executionContextMock = new Mock<IExecutionContext>();
+            executionContextMock.SetupGet(x => x.UserId).Returns(1);
+            executionContextMock.SetupGet(x => x.TenantId).Returns(1);
             long fakeId = 1;
 
             repositoryMock
@@ -20,7 +24,7 @@ namespace Expenses.Application.Tests.commands.transactions
                 .Callback<Transaction>(t => t.Id = fakeId)
                 .Returns(Task.CompletedTask);
 
-            var handler = new CreateTransactionHandler(repositoryMock.Object);
+            var handler = new CreateTransactionHandler(repositoryMock.Object, executionContextMock.Object);
 
             var command = new CreateTransactionCommand(
                     "fake transaction",
@@ -28,50 +32,12 @@ namespace Expenses.Application.Tests.commands.transactions
                     Currency.EUR,
                     TransactionType.Expense,
                     1,
-                    1,
-                    1,
                     DateTime.Now
             );
 
             await handler.Handle(command, CancellationToken.None);
 
             repositoryMock.Verify(r => r.AddAsync(It.IsAny<Transaction>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
-        {
-            var validator = new CreateTransactionCommandValidator();
-            CreateTransactionCommand command = new CreateTransactionCommand(
-                "fake transaction",
-                231,
-                Currency.EUR,
-                TransactionType.Expense,
-                1,
-                -1,
-                1,
-                DateTime.Now
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()
-        {
-            var validator = new CreateTransactionCommandValidator();
-            CreateTransactionCommand command = new CreateTransactionCommand(
-                "fake transaction",
-                231,
-                Currency.EUR,
-                TransactionType.Expense,
-                -1,
-                1,
-                1,
-                DateTime.Now
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
         }
 
         [Fact]
@@ -83,8 +49,6 @@ namespace Expenses.Application.Tests.commands.transactions
                 231,
                 Currency.EUR,
                 TransactionType.Expense,
-                1,
-                1,
                 -1,
                 DateTime.Now
             );
@@ -101,8 +65,6 @@ namespace Expenses.Application.Tests.commands.transactions
                 0,
                 Currency.EUR,
                 TransactionType.Expense,
-                1,
-                1,
                 1,
                 DateTime.Now
             );

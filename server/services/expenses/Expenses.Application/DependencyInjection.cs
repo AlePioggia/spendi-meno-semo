@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Expenses.Application.contexts;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace Expenses.Application
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddScoped<Expenses.Application.contexts.ExecutionContext>();
+            services.AddScoped<IExecutionContext>(sp => sp.GetRequiredService<Expenses.Application.contexts.ExecutionContext>());
 
             return services;
         }

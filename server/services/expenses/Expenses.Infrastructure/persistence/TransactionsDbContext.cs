@@ -1,4 +1,5 @@
 ﻿using Expenses.Domain.Entities;
+using Expenses.Application.contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,18 @@ namespace Expenses.Infrastructure.persistence
 {
     public class TransactionsDbContext: DbContext
     {
-        public TransactionsDbContext(DbContextOptions<TransactionsDbContext> options)
-            : base(options) { }
+        private readonly IExecutionContext _executionContext;
+
+        public long CurrentTenantId => _executionContext.TenantId;
+        public long CurrentUserId => _executionContext.UserId;
+
+        public TransactionsDbContext(
+            DbContextOptions<TransactionsDbContext> options,
+            IExecutionContext executionContext)
+            : base(options)
+        {
+            _executionContext = executionContext;
+        }
 
         public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<Category> Categories => Set<Category>();
@@ -19,6 +30,12 @@ namespace Expenses.Infrastructure.persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(TransactionsDbContext).Assembly);
+
+            modelBuilder.Entity<Transaction>()
+                .HasQueryFilter(t => t.Status == 0 && t.TenantId == CurrentTenantId && t.UserId == CurrentUserId);
+
+            modelBuilder.Entity<Category>()
+                .HasQueryFilter(c => c.Status == 0 && c.TenantId == CurrentTenantId && c.UserId == CurrentUserId);
         }
     }
 }

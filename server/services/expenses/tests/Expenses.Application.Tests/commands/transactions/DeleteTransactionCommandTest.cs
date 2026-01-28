@@ -27,40 +27,12 @@ namespace Expenses.Application.Tests.commands.transactions
 
             var handler = new DeleteTransactionHandler(repositoryMock.Object);
             var command = new DeleteTransactionCommand(
-                1,
-                1,
                 1
             );
-            await handler.Handle(command);
+            await handler.Handle(command, CancellationToken.None);
 
             repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
             Assert.Equal(1, transaction.Status);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
-        {
-            var validator = new DeleteTransactionCommandValidator();
-            DeleteTransactionCommand command = new DeleteTransactionCommand(
-                1,
-                -1,
-                1
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()       
-        {
-            var validator = new DeleteTransactionCommandValidator();
-            DeleteTransactionCommand command = new DeleteTransactionCommand(
-                1,
-                1,
-                -1
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
         }
 
         [Fact]
@@ -68,9 +40,7 @@ namespace Expenses.Application.Tests.commands.transactions
         {
             var validator = new DeleteTransactionCommandValidator();
             DeleteTransactionCommand command = new DeleteTransactionCommand(
-                -1,
-                1,
-                1
+                -1
             );
             var result = validator.Validate(command);
             Assert.False(result.IsValid);

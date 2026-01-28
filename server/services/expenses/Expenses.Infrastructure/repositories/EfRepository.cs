@@ -3,6 +3,7 @@ using Expenses.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Expenses.Infrastructure.repositories
@@ -33,16 +34,24 @@ namespace Expenses.Infrastructure.repositories
 
         public async Task<List<TEntity>> GetAllAsync()
         {
-            return await _dbSet.
-                Where(entity => EF.Property<int>(entity, "Status") == 0)
-                .ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            return await _dbSet
-                .Where(entity => EF.Property<int>(entity, "Status") == 0)
-                .FirstOrDefaultAsync(e => EF.Property<TKey>(e, "Id").Equals(id));
+            // Use a translatable predicate (avoid EqualityComparer<TKey>.Default.Equals, which EF can't translate).
+            var parameter = Expression.Parameter(typeof(TEntity), "e");
+            var idProperty = Expression.Call(
+                typeof(EF),
+                nameof(EF.Property),
+                new[] { typeof(TKey) },
+                parameter,
+                Expression.Constant("Id"));
+
+            var equals = Expression.Equal(idProperty, Expression.Constant(id, typeof(TKey)));
+            var predicate = Expression.Lambda<Func<TEntity, bool>>(equals, parameter);
+
+            return await _dbSet.FirstOrDefaultAsync(predicate);
         }
 
         public async Task UpdateAsync(TEntity entity)

@@ -16,14 +16,6 @@ namespace Expenses.Application.commands.categories.createCategory
             RuleFor(x => x.description)
                 .MaximumLength(500)
                 .WithMessage("Description cannot exceed 500 characters.");
-
-            RuleFor(x => x.tenantId)
-                .GreaterThan(-1)
-                .WithMessage("TenantId is required.");
-
-            RuleFor(x => x.userId)
-                .GreaterThan(-1)
-                .WithMessage("UserId is required.");
         }
     }
 }

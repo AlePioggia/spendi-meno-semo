@@ -6,8 +6,6 @@ using System.Text;
 namespace Expenses.Application.commands.categories.deleteCategory
 {
     public sealed record DeleteCategoryCommand(
-        long id,
-        long userId,
-        long tenantId
+        long id
     ): IRequest;
 }

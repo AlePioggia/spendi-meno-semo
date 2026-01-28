@@ -1,12 +1,13 @@
 ﻿using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Expenses.Application.commands.transactions.deleteTransaction
 {
-    public class DeleteTransactionHandler
+    public class DeleteTransactionHandler: IRequestHandler<DeleteTransactionCommand>
     {
         private readonly IRepository<Transaction, long> _repository;
 
@@ -15,10 +16,10 @@ namespace Expenses.Application.commands.transactions.deleteTransaction
             _repository = repository;
         }
 
-        public async Task Handle(DeleteTransactionCommand command)
+        public async Task Handle(DeleteTransactionCommand command, CancellationToken ct)
         {
-            Transaction transaction = await _repository.GetByIdAsync(command.id) ?? new Transaction();
-            if (transaction.Id <= 0)
+            Transaction? transaction = await _repository.GetByIdAsync(command.id);
+            if (transaction is null)
             {
                 return;
             }

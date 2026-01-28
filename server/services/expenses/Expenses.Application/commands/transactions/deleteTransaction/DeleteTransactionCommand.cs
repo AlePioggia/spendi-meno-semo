@@ -5,5 +5,5 @@ using System.Text;
 
 namespace Expenses.Application.commands.transactions.deleteTransaction
 {
-    public record DeleteTransactionCommand(long id, long userId, long tenantId) : IRequest;
+    public record DeleteTransactionCommand(long id) : IRequest;
 }

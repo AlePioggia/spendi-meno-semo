@@ -39,7 +39,7 @@ namespace Expenses.Application.Tests.queries.category
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(categories);
             var handler = new GetCategoriesHandler(repositoryMock.Object);
-            var command = new GetCategoriesQuery(1, 1);
+            var command = new GetCategoriesQuery();
             List<Category>? result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);
             Assert.Equal(categories, result);
@@ -55,20 +55,10 @@ namespace Expenses.Application.Tests.queries.category
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(categories);
             var handler = new GetCategoriesHandler(repositoryMock.Object);
-            var command = new GetCategoriesQuery(1, 1);
+            var command = new GetCategoriesQuery();
             List<Category>? result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);
             Assert.Empty(result);
-        }
-
-        [Fact]
-        public async Task Handle_ShouldReturnNullIfTenantIsZero()
-        {
-            var repositoryMock = new Mock<IRepository<Category, long>>();
-            var handler = new GetCategoriesHandler(repositoryMock.Object);
-            var command = new GetCategoriesQuery(0, 1);
-            List<Category>? result = await handler.Handle(command, CancellationToken.None);
-            Assert.Null(result);
         }
     }
 }
