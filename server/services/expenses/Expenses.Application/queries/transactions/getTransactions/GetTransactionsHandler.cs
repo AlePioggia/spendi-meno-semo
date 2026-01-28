@@ -18,11 +18,6 @@ namespace Expenses.Application.queries.transactions.getTransactions
 
         public async Task<List<Transaction>?> Handle(GetTransactionsQuery query, CancellationToken none)
         {
-            if (query.userId <= 0 || query.tenantId <= 0)
-            {
-                return null;
-            }
-
             return await _repository.GetAllAsync();
         }
     }

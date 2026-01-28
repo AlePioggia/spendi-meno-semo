@@ -20,14 +20,7 @@ namespace Expenses.Application.queries.categories.getCategoryById
 
         public async Task<Category?> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
         {
-            var category = await _repository.GetByIdAsync(query.CategoryId);
-
-            if (category?.TenantId != query.TenantId || category.UserId != query.UserId)
-            {
-                return null;
-            }
-
-            return category;
+            return await _repository.GetByIdAsync(query.CategoryId);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Expenses.Infrastructure.persistence;
+using Expenses.Application.contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System;
@@ -18,7 +19,14 @@ namespace Expenses.Infrastructure.Persistence
 
             optionsBuilder.UseSqlServer(connectionString);
 
-            return new TransactionsDbContext(optionsBuilder.Options);
+            // Design-time factory: use a default context so EF can build the model.
+            IExecutionContext executionContext = new Expenses.Application.contexts.ExecutionContext
+            {
+                TenantId = 1,
+                UserId = 1
+            };
+
+            return new TransactionsDbContext(optionsBuilder.Options, executionContext);
         }
     }
 }

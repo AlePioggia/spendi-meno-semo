@@ -14,8 +14,6 @@ namespace Expenses.Application.commands.transactions.updateTransaction
         TransactionType transactionType,
         Currency currency,
         long categoryId,
-        DateTime date,
-        long userId,
-        long tenantId
+        DateTime date
     ): IRequest;
 }

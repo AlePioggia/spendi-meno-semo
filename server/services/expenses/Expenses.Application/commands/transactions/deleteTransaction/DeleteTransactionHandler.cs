@@ -18,8 +18,8 @@ namespace Expenses.Application.commands.transactions.deleteTransaction
 
         public async Task Handle(DeleteTransactionCommand command, CancellationToken ct)
         {
-            Transaction transaction = await _repository.GetByIdAsync(command.id) ?? new Transaction();
-            if (transaction.Id <= 0)
+            Transaction? transaction = await _repository.GetByIdAsync(command.id);
+            if (transaction is null)
             {
                 return;
             }

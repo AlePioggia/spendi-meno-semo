@@ -11,10 +11,6 @@ namespace Expenses.Application.commands.transactions.updateTransaction
         {
             RuleFor(x => x.id)
                 .GreaterThan(0).WithMessage("Transaction Id must be greater than zero.");
-            RuleFor(x => x.tenantId)
-                .GreaterThan(0).WithMessage("Tenant Id must be greater than zero.");
-            RuleFor(x => x.userId)
-                .GreaterThan(0).WithMessage("User Id must be greater than zero.");
             RuleFor(x => x.date)
                 .NotNull().WithMessage("Date must be provided.");
             RuleFor(x => x.categoryId)

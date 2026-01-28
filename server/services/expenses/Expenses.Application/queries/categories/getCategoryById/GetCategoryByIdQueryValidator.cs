@@ -11,10 +11,6 @@ namespace Expenses.Application.queries.categories.getCategoryById
         {
             RuleFor(x => x.CategoryId)
                 .GreaterThan(0).WithMessage("TransactionId must be greater than 0.");
-            RuleFor(x => x.TenantId)
-                .GreaterThan(0).WithMessage("TenantId must be greater than 0.");
-            RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("UserId must be greater than 0.");
         }
     }
 }

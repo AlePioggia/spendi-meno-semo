@@ -25,12 +25,10 @@ namespace Expenses.Application.Tests.queries.category
                 CreatedAt = DateTime.UtcNow
             };
             repositoryMock
-                .Setup(repository => repository.GetByIdAsync(fakeId).Result)
-                .Returns(category);
+                .Setup(repository => repository.GetByIdAsync(fakeId))
+                .ReturnsAsync(category);
             var handler = new GetCategoryByIdHandler(repositoryMock.Object);
             var command = new GetCategoryByIdQuery(
-                fakeId,
-                fakeId,
                 fakeId
             );
             Category? result = await handler.Handle(command, CancellationToken.None);
@@ -52,12 +50,10 @@ namespace Expenses.Application.Tests.queries.category
                 CreatedAt = DateTime.UtcNow
             };
             repositoryMock
-                .Setup(repository => repository.GetByIdAsync(fakeId).Result)
-                .Returns((Category?)null);
+                .Setup(repository => repository.GetByIdAsync(fakeId))
+                .ReturnsAsync((Category?)null);
             var handler = new GetCategoryByIdHandler(repositoryMock.Object);
             var command = new GetCategoryByIdQuery(
-                fakeId,
-                fakeId,
                 fakeId
             );
             Category? result = await handler.Handle(command, CancellationToken.None);
@@ -70,42 +66,12 @@ namespace Expenses.Application.Tests.queries.category
             var validator = new GetCategoryByIdQueryValidator();
 
             var query = new GetCategoryByIdQuery(
-                -1, 
-                1, 
-                1
+                -1
             );
 
             var result = await validator.ValidateAsync(query);
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, error => error.PropertyName == nameof(GetCategoryByIdQuery.CategoryId));
-        }
-
-        [Fact]
-        public async Task Handle_ShouldNotValidateIfUserIdIsLessThanOne()
-        {
-            var validator = new GetCategoryByIdQueryValidator();
-            var query = new GetCategoryByIdQuery(
-                1,
-                -1,
-                1
-            );
-            var result = await validator.ValidateAsync(query);
-            Assert.False(result.IsValid);
-            Assert.Contains(result.Errors, error => error.PropertyName == nameof(GetCategoryByIdQuery.UserId));
-        }
-
-        [Fact]
-        public async Task Handle_ShouldNotValidateIfTenantIdIsLessThanOne()
-        {
-            var validator = new GetCategoryByIdQueryValidator();
-            var query = new GetCategoryByIdQuery(
-                1,
-                1,
-                -1
-            );
-            var result = await validator.ValidateAsync(query);
-            Assert.False(result.IsValid);
-            Assert.Contains(result.Errors, error => error.PropertyName == nameof(GetCategoryByIdQuery.TenantId));
         }
     }
 }

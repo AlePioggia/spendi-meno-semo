@@ -27,8 +27,6 @@ namespace Expenses.Application.Tests.commands.transactions
 
             var handler = new DeleteTransactionHandler(repositoryMock.Object);
             var command = new DeleteTransactionCommand(
-                1,
-                1,
                 1
             );
             await handler.Handle(command, CancellationToken.None);
@@ -38,39 +36,11 @@ namespace Expenses.Application.Tests.commands.transactions
         }
 
         [Fact]
-        public async Task Handle_CommandShouldFailWhenTenantIdIsLessThanZero()
-        {
-            var validator = new DeleteTransactionCommandValidator();
-            DeleteTransactionCommand command = new DeleteTransactionCommand(
-                1,
-                -1,
-                1
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
-        public async Task Handle_CommandShouldFailWhenUserIdIsLessThanZero()       
-        {
-            var validator = new DeleteTransactionCommandValidator();
-            DeleteTransactionCommand command = new DeleteTransactionCommand(
-                1,
-                1,
-                -1
-            );
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-        }
-
-        [Fact]
         public async Task Handle_CommandShouldFailWhenIdIsLessThanZero()
         {
             var validator = new DeleteTransactionCommandValidator();
             DeleteTransactionCommand command = new DeleteTransactionCommand(
-                -1,
-                1,
-                1
+                -1
             );
             var result = validator.Validate(command);
             Assert.False(result.IsValid);

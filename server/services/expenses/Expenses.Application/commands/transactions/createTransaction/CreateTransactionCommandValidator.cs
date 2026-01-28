@@ -16,24 +16,16 @@ namespace Expenses.Application.commands.transactions.createTransaction
                 .WithMessage("Amount must be greater than zero.");
 
             RuleFor(x => x.CategoryId)
-                .LessThan(0)
-                .WithMessage("CategoryId is required.");
+                .GreaterThan(0)
+                .WithMessage("CategoryId must be greater than zero.");
 
             RuleFor(x => x.Date)
                 .NotEmpty()
                 .WithMessage("Date is required.");
 
-            RuleFor(x => x.UserId)
-                .LessThan(0)
-                .WithMessage("UserId is required.");
-            
             RuleFor(x => x.Description)
                 .MaximumLength(500)
                 .WithMessage("Description cannot exceed 500 characters.");
-            
-            RuleFor(x => x.TenantId)
-                .GreaterThan(0)
-                .WithMessage("TenantId is required.");
         }
 
     }

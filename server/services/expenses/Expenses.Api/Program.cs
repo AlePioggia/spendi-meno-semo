@@ -1,5 +1,6 @@
 using DotNetEnv;
 using Expenses.Application;
+using Expenses.Api.middleware;
 using Expenses.Infrastructure;
 using Expenses.Infrastructure.persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -122,6 +123,7 @@ app.UseCors("AllowAngularDev");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
+app.UseMiddleware<ExecutionContextMiddleware>();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();

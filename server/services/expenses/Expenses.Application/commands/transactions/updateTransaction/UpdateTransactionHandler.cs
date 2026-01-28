@@ -20,17 +20,17 @@ namespace Expenses.Application.commands.transactions.updateTransaction
         {
             Money money = new Money(command.amount);
 
-            Transaction transaction = new Transaction()
+            Transaction? transaction = await _repository.GetByIdAsync(command.id);
+            if (transaction is null)
             {
-                Id = command.id,
-                Description = command.description,
-                Amount = money,
-                ExpenseType = command.transactionType,
-                CategoryId = command.categoryId,
-                Date = command.date,
-                UserId = command.userId,
-                TenantId = command.tenantId
-            };
+                return;
+            }
+
+            transaction.Description = command.description;
+            transaction.Amount = money;
+            transaction.ExpenseType = command.transactionType;
+            transaction.CategoryId = command.categoryId;
+            transaction.Date = command.date;
 
             await _repository.UpdateAsync(transaction);
         }

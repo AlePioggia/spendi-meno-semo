@@ -7,8 +7,6 @@ using System.Text;
 namespace Expenses.Application.queries.categories.getCategoryById
 {
     public sealed record GetCategoryByIdQuery(
-        long CategoryId,
-        long UserId,
-        long TenantId
+        long CategoryId
     ) : IRequest<Category?>;
 }

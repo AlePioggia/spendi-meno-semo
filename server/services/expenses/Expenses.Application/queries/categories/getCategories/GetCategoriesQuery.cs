@@ -6,5 +6,5 @@ using System.Text;
 
 namespace Expenses.Application.queries.categories.getCategories
 {
-    public sealed record GetCategoriesQuery(long TenantId, long UserId) : IRequest<List<Category>>;
+    public sealed record GetCategoriesQuery() : IRequest<List<Category>>;
 }

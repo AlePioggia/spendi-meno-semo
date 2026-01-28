@@ -12,12 +12,6 @@ namespace Expenses.Application.commands.categories.deleteCategory
             RuleFor(x => x.id)
                 .GreaterThan(0)
                 .WithMessage("CategoryId is required.");
-            RuleFor(x => x.tenantId)
-                .GreaterThan(0)
-                .WithMessage("TenantId is required.");
-            RuleFor(x => x.userId)
-                .GreaterThan(0)
-                .WithMessage("UserId is required.");
         }
     }
 }

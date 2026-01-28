@@ -30,7 +30,7 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                var query = new GetCategoryByIdQuery(id, 1, 1);
+                var query = new GetCategoryByIdQuery(id);
                 var category = await _mediator.Send(query);
                 if (category is null)
                 {
@@ -61,7 +61,7 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                var query = new GetCategoriesQuery(1, 1);
+                var query = new GetCategoriesQuery();
                 var categories = await _mediator.Send(query);
                 if (categories is null)
                 {
@@ -95,8 +95,6 @@ namespace Expenses.Api.controllers
                 var command = new CreateCategoryCommand(
                     request.Name,
                     request.Description,
-                    1,
-                    1,
                     DateTime.Now
                 );
 
@@ -119,14 +117,7 @@ namespace Expenses.Api.controllers
         {
             try
             {
-                long userId = 1;
-                long tenantId = 1;
-
-                await _mediator.Send(new DeleteCategoryCommand(
-                    id,
-                    userId,
-                    tenantId
-                ));
+                await _mediator.Send(new DeleteCategoryCommand(id));
                 return Ok(id);
             }
             catch (ValidationException ex)

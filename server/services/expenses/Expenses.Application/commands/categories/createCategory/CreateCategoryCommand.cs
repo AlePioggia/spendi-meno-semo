@@ -8,8 +8,6 @@ namespace Expenses.Application.commands.categories.createCategory
     public sealed record CreateCategoryCommand(
         string name, 
         string description,
-        long userId,
-        long tenantId,
         DateTime createdAt
     ): IRequest;
 }
