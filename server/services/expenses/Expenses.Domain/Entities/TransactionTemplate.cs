@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Expenses.Domain.Entities
 {
-    public class Transaction : BaseEntity<long>
+    public class TransactionTemplate: BaseEntity<long>
     {
         public string? Description { get; set; }
         public Money? Amount { get; set; }
@@ -13,7 +13,5 @@ namespace Expenses.Domain.Entities
         public long CategoryId { get; set; }
         public Category Category { get; set; } = default!;
         public DateTime Date { get; set; }
-        public long? RecurringOperationId { get; set; }
-        public RecurringOperation? RecurringOperation { get; set; }
     }
 }
