@@ -80,6 +80,7 @@ namespace Expenses.Domain
                 Frequency = RecurringOperationFrequency.Monthly,
                 StartDate = new DateTime(2023, 1, 1),
                 EndDate = new DateTime(2023, 12, 31),
+                TemplateId = 0,
                 CreatedAt = DateTime.UtcNow
             };
             Assert.Equal(1, recurringOperation.Id);
