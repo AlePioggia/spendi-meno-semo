@@ -1,4 +1,4 @@
-﻿using Expenses.Application.queries.categories.getCategoryById;
+﻿using Expenses.Application.queries.categories;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
 using Moq;

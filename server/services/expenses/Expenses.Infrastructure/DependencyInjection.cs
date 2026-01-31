@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using Expenses.Infrastructure.repositories;
 using Expenses.Infrastructure.persistence;
+using Expenses.Domain.Entities;
 
 namespace Expenses.Infrastructure
 {
@@ -22,6 +23,7 @@ namespace Expenses.Infrastructure
                     configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
+            services.AddScoped<IRepository<RecurringOperation, long>, RecurringOperationRepository>();
 
             return services;
         }
@@ -34,6 +36,7 @@ namespace Expenses.Infrastructure
                 options.UseSqlServer(connectionString));
 
             services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
+            services.AddScoped<IRepository<RecurringOperation, long>, RecurringOperationRepository>();
 
             return services;
         }

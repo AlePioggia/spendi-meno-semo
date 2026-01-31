@@ -1,4 +1,4 @@
-﻿using Expenses.Application.commands.categories.deleteCategory;
+﻿using Expenses.Application.commands.categories;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
 using Moq;

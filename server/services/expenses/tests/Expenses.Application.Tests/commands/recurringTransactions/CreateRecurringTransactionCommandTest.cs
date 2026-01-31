@@ -1,4 +1,4 @@
-﻿using Expenses.Application.commands.recurringTransactions.createRecurringTransaction;
+﻿using Expenses.Application.commands.recurringTransactions;
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;

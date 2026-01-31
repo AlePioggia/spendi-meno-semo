@@ -1,4 +1,4 @@
-﻿using Expenses.Application.commands.transactions.createTransaction;
+﻿using Expenses.Application.commands.transactions;
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
