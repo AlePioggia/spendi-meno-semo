@@ -19,7 +19,6 @@ namespace Expenses.Infrastructure.Persistence
 
             optionsBuilder.UseSqlServer(connectionString);
 
-            // Design-time factory: use a default context so EF can build the model.
             IExecutionContext executionContext = new Expenses.Application.contexts.ExecutionContext
             {
                 TenantId = 1,
