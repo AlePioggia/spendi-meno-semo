@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Expenses.Domain.Entities.enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

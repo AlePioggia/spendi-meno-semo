@@ -2,6 +2,7 @@
 using Expenses.Application.commands.transactions.updateTransaction;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
+using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
 using Moq;
 using System;

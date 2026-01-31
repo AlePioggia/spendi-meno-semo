@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Expenses.Domain.Entities
+namespace Expenses.Domain.Entities.enums
 {
     public enum TransactionType
     {

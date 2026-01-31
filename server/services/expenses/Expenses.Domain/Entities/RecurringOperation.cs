@@ -1,0 +1,15 @@
+﻿using Expenses.Domain.Entities.enums;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Expenses.Domain.Entities
+{
+    public class RecurringOperation: BaseEntity<long>
+    {
+        public string? Description { get; set; }
+        public RecurringOperationFrequency Frequency { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    }
+}

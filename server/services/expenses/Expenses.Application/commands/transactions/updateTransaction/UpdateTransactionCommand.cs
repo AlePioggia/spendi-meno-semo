@@ -1,4 +1,4 @@
-﻿using Expenses.Domain.Entities;
+﻿using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
 using MediatR;
 using System;

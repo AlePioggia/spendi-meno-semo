@@ -5,7 +5,7 @@ using Expenses.Application.commands.transactions.deleteTransaction;
 using Expenses.Application.commands.transactions.updateTransaction;
 using Expenses.Application.queries.transactions.getTransactionById;
 using Expenses.Application.queries.transactions.getTransactions;
-using Expenses.Domain.Entities;
+using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
 using FluentValidation;
 using MediatR;
