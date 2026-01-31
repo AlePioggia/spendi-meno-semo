@@ -98,7 +98,7 @@ namespace Expenses.Domain
                 Id = 1,
                 Description = "Grocery Shopping",
                 Amount = new Money(150, Currency.USD),
-                ExpenseType = TransactionType.Expense,
+                TransactionType = TransactionType.Expense,
                 CategoryId = 0,
                 Date = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
@@ -107,7 +107,7 @@ namespace Expenses.Domain
             Assert.Equal("Grocery Shopping", template.Description);
             Assert.Equal(150, template.Amount?.Amount);
             Assert.Equal(Currency.USD, template.Amount?.Currency);
-            Assert.Equal(TransactionType.Expense, template.ExpenseType);
+            Assert.Equal(TransactionType.Expense, template.TransactionType);
             Assert.Equal(0, template.CategoryId);
             Assert.True((DateTime.UtcNow - template.Date).TotalSeconds < 5);
         }
