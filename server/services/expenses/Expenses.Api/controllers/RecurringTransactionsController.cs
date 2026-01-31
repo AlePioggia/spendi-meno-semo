@@ -39,12 +39,14 @@ namespace Expenses.Api.controllers
                     ro.StartDate,
                     ro.EndDate,
                     ro.CategoryId,
-                    ro.Template?.Description ?? "",
-                    ro.Template?.Amount?.Amount ?? 0,
-                    ro.Template?.Amount?.Currency.ToString() ?? "",
-                    ro.Template?.TransactionType.ToString() ?? "",
-                    ro.Template?.Date ?? default,
-                    ro.CreatedAt
+                    ro.CreatedAt,
+                    new TransactionTemplateResponseDto(
+                        ro.Template?.Description ?? "",
+                        ro.Template?.Amount?.Amount ?? 0,
+                        ro.Template?.Amount?.Currency.ToString() ?? "",
+                        ro.Template?.TransactionType.ToString() ?? "",
+                        ro.Template?.Date ?? default
+                    )
                 )).ToList();
 
                 return Ok(mapped);
@@ -77,12 +79,14 @@ namespace Expenses.Api.controllers
                     ro.StartDate,
                     ro.EndDate,
                     ro.CategoryId,
-                    ro.Template?.Description ?? "",
-                    ro.Template?.Amount?.Amount ?? 0,
-                    ro.Template?.Amount?.Currency.ToString() ?? "",
-                    ro.Template?.TransactionType.ToString() ?? "",
-                    ro.Template?.Date ?? default,
-                    ro.CreatedAt
+                    ro.CreatedAt,
+                    new TransactionTemplateResponseDto(
+                        ro.Template?.Description ?? "",
+                        ro.Template?.Amount?.Amount ?? 0,
+                        ro.Template?.Amount?.Currency.ToString() ?? "",
+                        ro.Template?.TransactionType.ToString() ?? "",
+                        ro.Template?.Date ?? default
+                    )
                 );
 
                 return Ok(mapped);
