@@ -39,7 +39,6 @@ namespace Expenses.Infrastructure.repositories
 
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            // Use a translatable predicate (avoid EqualityComparer<TKey>.Default.Equals, which EF can't translate).
             var parameter = Expression.Parameter(typeof(TEntity), "e");
             var idProperty = Expression.Call(
                 typeof(EF),
