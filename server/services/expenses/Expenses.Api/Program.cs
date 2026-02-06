@@ -2,6 +2,7 @@ using DotNetEnv;
 using Expenses.Application;
 using Expenses.Api.middleware;
 using Expenses.Infrastructure;
+using Expenses.Infrastructure.scheduled;
 using Expenses.Infrastructure.persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -98,6 +99,8 @@ if (debug)
     //builder.Services.AddInfrastructure(connectionString);
     builder.Services.AddInfrastructure(builder.Configuration);
 }
+
+builder.Services.AddHostedService<RecurringTransactionsJob>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
