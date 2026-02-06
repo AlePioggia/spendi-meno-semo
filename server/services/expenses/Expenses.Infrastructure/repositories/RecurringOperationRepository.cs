@@ -63,7 +63,7 @@ namespace Expenses.Infrastructure.repositories
             return await _dbContext.Set<RecurringOperation>()
                 .Include(x => x.Template)
                 .Include(x => x.Category)
-                .Include(x => x.Transactions.Where(y => y.UserId == x.UserId && y.TenantId == x.TenantId))
+                .Include(x => x.Transactions)
                 .IgnoreQueryFilters()
                 .Where(x => x.Frequency == frequency)
                 .AsSplitQuery()

@@ -1,0 +1,117 @@
+<div class="recurring-container">
+  <mat-card class="recurring-card">
+    <div class="card-header">
+      <div class="title">
+        <h2>Spese ricorrenti</h2>
+        <div class="subtitle">Gestisci ricorrenze e template</div>
+      </div>
+
+      <button
+        mat-fab
+        color="primary"
+        class="add-button"
+        (click)="openCreateDialog()"
+        aria-label="Aggiungi spesa ricorrente"
+        matTooltip="Nuova ricorrenza"
+        matTooltipPosition="below"
+        matTooltipShowDelay="250"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="loading()" class="loading">
+      <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+    </div>
+
+    <div *ngIf="!loading()" class="table-wrap">
+      <div class="no-items" *ngIf="recurringTransactions().length === 0">
+        Nessuna ricorrenza presente.
+      </div>
+
+      <table mat-table [dataSource]="recurringTransactions()" class="recurring-table" *ngIf="recurringTransactions().length > 0">
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Descrizione</th>
+          <td mat-cell *matCellDef="let r">{{ r.description }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="frequency">
+          <th mat-header-cell *matHeaderCellDef>Frequenza</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="pill">
+              <mat-icon>repeat</mat-icon>
+              {{ r.frequency }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="range">
+          <th mat-header-cell *matHeaderCellDef>Periodo</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="muted">{{ formatDate(r.startDate) }} → {{ formatDate(r.endDate) }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Categoria</th>
+          <td mat-cell *matCellDef="let r">{{ categoryName()(r.categoryId) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="template">
+          <th mat-header-cell *matHeaderCellDef>Template</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="template">
+              <div class="template-main">
+                <mat-icon>receipt_long</mat-icon>
+                <span class="tpl-desc">{{ r.template?.description }}</span>
+              </div>
+              <div class="template-meta">
+                <span class="chip">{{ r.template?.transactionType }}</span>
+                <span class="chip">{{ r.template?.amount | number:'1.2-2' }} {{ r.template?.currency }}</span>
+                <span class="chip">{{ formatDate(r.template?.date) }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Creato</th>
+          <td mat-cell *matCellDef="let r">{{ formatDateTime(r.createdAt) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Azioni</th>
+          <td mat-cell *matCellDef="let r" class="actions">
+            <button
+              mat-icon-button
+              class="edit-button"
+              (click)="openEditDialog(r)"
+              aria-label="Modifica ricorrenza"
+              matTooltip="Modifica"
+              matTooltipPosition="left"
+              matTooltipShowDelay="250"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              color="warn"
+              class="delete-button"
+              (click)="deleteRecurring(r.id)"
+              aria-label="Elimina ricorrenza"
+              matTooltip="Elimina"
+              matTooltipPosition="left"
+              matTooltipShowDelay="250"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+      </table>
+    </div>
+  </mat-card>
+</div>

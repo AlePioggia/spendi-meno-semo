@@ -27,6 +27,7 @@ import { MatListModule } from "@angular/material/list";
         </div>
         <mat-nav-list>
           <a mat-list-item routerLink="/transactions" routerLinkActive="active">Transazioni</a>
+          <a mat-list-item routerLink="/recurring-transactions" routerLinkActive="active">Spese ricorrenti</a>
           <a mat-list-item routerLink="/categories" routerLinkActive="active">Categorie</a>
         </mat-nav-list>
       </mat-sidenav>
