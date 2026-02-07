@@ -1,7 +1,5 @@
 # Documentazione
 
-Questa cartella contiene documentazione “umana” del progetto (architettura, struttura, scelte).
-
 ## Indice
 
 - [Architettura di massima](./architecture-overview.md)
