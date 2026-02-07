@@ -472,9 +472,8 @@ export class RecurringTransactionUpsertDialog {
       const domStr = this.templateDayOfMonth().trim();
       const dom = domStr.length ? Number(domStr) : 1;
       const safeDay = Math.min(Math.max(1, dom), 31);
-      const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
-      const clamped = Math.min(safeDay, daysInMonth);
-      return new Date(start.getFullYear(), start.getMonth(), clamped);
+
+      return new Date(Date.UTC(2000, 0, safeDay, 12, 0, 0));
     }
 
     return this.toLocalDate(this.templateDate());
