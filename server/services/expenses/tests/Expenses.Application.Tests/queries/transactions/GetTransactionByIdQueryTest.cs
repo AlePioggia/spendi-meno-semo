@@ -1,6 +1,7 @@
-﻿using Expenses.Application.queries.transactions.getTransactionById;
+﻿using Expenses.Application.queries.transactions;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
+using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
 using Moq;
 using System;

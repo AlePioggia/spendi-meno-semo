@@ -1,5 +1,4 @@
-﻿using Expenses.Application.commands.transactions.deleteTransaction;
-using Expenses.Application.commands.transactions.updateTransaction;
+﻿using Expenses.Application.commands.transactions;
 using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
 using Moq;

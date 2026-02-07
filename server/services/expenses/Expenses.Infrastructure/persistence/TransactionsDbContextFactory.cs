@@ -12,14 +12,12 @@ namespace Expenses.Infrastructure.Persistence
     {
         public TransactionsDbContext CreateDbContext(string[] args)
         {
-            //var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
-            var connectionString = "Server=localhost,1433;Database=TransactionsDb;User Id=sa;Password=StrongPassw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True";
-
+            var connectionString = Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING");
+            
             var optionsBuilder = new DbContextOptionsBuilder<TransactionsDbContext>();
 
             optionsBuilder.UseSqlServer(connectionString);
 
-            // Design-time factory: use a default context so EF can build the model.
             IExecutionContext executionContext = new Expenses.Application.contexts.ExecutionContext
             {
                 TenantId = 1,

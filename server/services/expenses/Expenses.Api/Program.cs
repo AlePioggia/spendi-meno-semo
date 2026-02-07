@@ -2,34 +2,73 @@ using DotNetEnv;
 using Expenses.Application;
 using Expenses.Api.middleware;
 using Expenses.Infrastructure;
+using Expenses.Infrastructure.scheduled;
 using Expenses.Infrastructure.persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var debug = true;
+var isDevelopment = builder.Environment.IsDevelopment();
 
-if (debug)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.AddServerHeader = false;
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024;
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
+    options.Limits.KeepAliveTimeout = TimeSpan.FromSeconds(120);
+});
+
+if (isDevelopment)
 {
     builder.WebHost.UseUrls("http://localhost:5116");
 }
 
 DotNetEnv.Env.Load();
 
-builder.Services.AddCors(options =>
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.AddPolicy("AllowAngularDev", policy =>
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
+if (isDevelopment)
+{
+    builder.Services.AddCors(options =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        options.AddPolicy("AllowAngularDev", policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+    });
+}
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("per-ip", httpContext =>
+    {
+        var key = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: key,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 120,
+                Window = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
     });
 });
 
@@ -38,14 +77,14 @@ builder.Services
     .AddJwtBearer(options =>
     {
 
-        if (debug)
-        {
-            options.Authority = "http://localhost:8080/realms/myapp";
-        } else
-        {
-            options.Authority = "http://host.docker.internal:8080/realms/myapp";
-        }   
-        options.RequireHttpsMetadata = false;
+        var authorityFromConfig = builder.Configuration["Auth:Authority"]
+            ?? Environment.GetEnvironmentVariable("AUTH_AUTHORITY");
+        var defaultAuthority = isDevelopment
+            ? "http://localhost:8080/realms/myapp"
+            : "http://host.docker.internal:8080/realms/myapp";
+
+        options.Authority = string.IsNullOrWhiteSpace(authorityFromConfig) ? defaultAuthority : authorityFromConfig;
+        options.RequireHttpsMetadata = options.Authority.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
         options.RefreshOnIssuerKeyNotFound = true;
 
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -54,10 +93,11 @@ builder.Services
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.FromMinutes(2),
 
             IssuerValidator = (issuer, token, parameters) =>
             {
-                if (issuer == "http://localhost:8080/realms/myapp" || issuer == "http://host.docker.internal:8080/realms/myapp")
+                if (string.Equals(issuer, options.Authority, StringComparison.OrdinalIgnoreCase))
                     return issuer;
                 throw new SecurityTokenInvalidIssuerException($"Invalid issuer: {issuer}");
             }
@@ -67,15 +107,11 @@ builder.Services
         {
             OnAuthenticationFailed = ctx =>
             {
-                Console.WriteLine("JWT validation failed!");
-                Console.WriteLine("Token: " + ctx.Request.Headers["Authorization"]);
-                Console.WriteLine("Exception: " + ctx.Exception);
+                Console.WriteLine("JWT validation failed.");
                 return Task.CompletedTask;
             },
             OnTokenValidated = ctx =>
             {
-                var kid = ctx.SecurityToken;
-                Console.WriteLine("Token kid: " + kid.SigningKey);
                 return Task.CompletedTask;
             }
         };
@@ -85,10 +121,20 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
+builder.Services.AddHsts(options =>
+{
+    options.Preload = false;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(180);
+});
+
+if (isDevelopment)
+{
+    builder.Services.AddOpenApi();
+}
 
 builder.Services.AddApplication();
-if (debug)
+if (isDevelopment)
 {
     var connectionString = Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING") ?? "";
     builder.Services.AddInfrastructure(connectionString);
@@ -99,12 +145,37 @@ if (debug)
     builder.Services.AddInfrastructure(builder.Configuration);
 }
 
+builder.Services.AddHostedService<RecurringTransactionsJob>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (!debug)
+if (!isDevelopment)
+{
+    app.UseExceptionHandler();
+}
+
+app.UseForwardedHeaders();
+
+var enableHttpsRedirection = builder.Configuration.GetValue("Security:EnableHttpsRedirection", false);
+if (!isDevelopment && enableHttpsRedirection)
+{
+    app.UseHsts();
+}
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+    context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+
+    await next();
+});
+
+if (!isDevelopment)
 {
     using (var scope = app.Services.CreateScope())
     {
@@ -113,22 +184,29 @@ if (!debug)
     }
 }
 
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-app.UseCors("AllowAngularDev");
-app.UseSwagger();
-app.UseSwaggerUI();
+
+if (isDevelopment)
+{
+    app.UseCors("AllowAngularDev");
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<ExecutionContextMiddleware>();
 app.UseAuthorization();
 
-app.UseHttpsRedirection();
+if (enableHttpsRedirection)
+{
+    app.UseHttpsRedirection();
+}
 
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("per-ip");
 
 
 app.Run();

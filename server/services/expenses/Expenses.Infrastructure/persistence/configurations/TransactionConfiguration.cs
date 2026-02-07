@@ -56,6 +56,12 @@ namespace Expenses.Infrastructure.persistence.configurations
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder
+                .HasOne(x => x.RecurringOperation)
+                .WithMany(ro => ro.Transactions)
+                .HasForeignKey(x => x.RecurringOperationId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Property(x => x.Status)
                 .IsRequired();
         }

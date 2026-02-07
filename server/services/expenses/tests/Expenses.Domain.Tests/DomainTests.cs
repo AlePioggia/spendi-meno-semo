@@ -1,4 +1,5 @@
 ﻿using Expenses.Domain.Entities;
+using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
 
 namespace Expenses.Domain
@@ -51,6 +52,64 @@ namespace Expenses.Domain
             };
             Assert.Equal(1, category.Id);
             Assert.Equal("Indicates money spent on food!", category.Description);
+        }
+
+        [Fact]
+        public void RecurringOperationFrequency_Enum_Should_Have_Correct_Values()
+        {
+            Assert.Equal(0, (int)RecurringOperationFrequency.Daily);
+            Assert.Equal(1, (int)RecurringOperationFrequency.Weekly);
+            Assert.Equal(2, (int)RecurringOperationFrequency.Monthly);
+            Assert.Equal(3, (int)RecurringOperationFrequency.Yearly);
+        }
+
+        [Fact]
+        public void TransactionType_Enum_Should_Have_Correct_Values()
+        {
+            Assert.Equal(0, (int)TransactionType.Expense);
+            Assert.Equal(1, (int)TransactionType.Income);
+        }
+
+        [Fact]
+        public void RecurringOperation_Entity_Should_Have_Correct_Properties()
+        {
+            RecurringOperation recurringOperation = new RecurringOperation
+            {
+                Id = 1,
+                Description = "Monthly Subscription",
+                Frequency = RecurringOperationFrequency.Monthly,
+                StartDate = new DateTime(2023, 1, 1),
+                EndDate = new DateTime(2023, 12, 31),
+                TemplateId = 0,
+                CreatedAt = DateTime.UtcNow
+            };
+            Assert.Equal(1, recurringOperation.Id);
+            Assert.Equal("Monthly Subscription", recurringOperation.Description);
+            Assert.Equal(RecurringOperationFrequency.Monthly, recurringOperation.Frequency);
+            Assert.Equal(new DateTime(2023, 1, 1), recurringOperation.StartDate);
+            Assert.Equal(new DateTime(2023, 12, 31), recurringOperation.EndDate);
+        }
+
+        [Fact]
+        public void TransactionTemplate_Entity_Should_Have_Correct_Properties()
+        {
+            TransactionTemplate template = new TransactionTemplate
+            {
+                Id = 1,
+                Description = "Grocery Shopping",
+                Amount = new Money(150, Currency.USD),
+                TransactionType = TransactionType.Expense,
+                CategoryId = 0,
+                Date = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            };
+            Assert.Equal(1, template.Id);
+            Assert.Equal("Grocery Shopping", template.Description);
+            Assert.Equal(150, template.Amount?.Amount);
+            Assert.Equal(Currency.USD, template.Amount?.Currency);
+            Assert.Equal(TransactionType.Expense, template.TransactionType);
+            Assert.Equal(0, template.CategoryId);
+            Assert.True((DateTime.UtcNow - template.Date).TotalSeconds < 5);
         }
     }
 }

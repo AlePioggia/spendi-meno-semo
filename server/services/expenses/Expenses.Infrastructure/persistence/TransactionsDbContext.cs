@@ -25,6 +25,8 @@ namespace Expenses.Infrastructure.persistence
 
         public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<RecurringOperation> RecurringOperations => Set<RecurringOperation>();
+        public DbSet<TransactionTemplate> TransactionTemplates => Set<TransactionTemplate>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +38,12 @@ namespace Expenses.Infrastructure.persistence
 
             modelBuilder.Entity<Category>()
                 .HasQueryFilter(c => c.Status == 0 && c.TenantId == CurrentTenantId && c.UserId == CurrentUserId);
+
+            modelBuilder.Entity<RecurringOperation>()
+                .HasQueryFilter(ro => ro.Status == 0 && ro.TenantId == CurrentTenantId && ro.UserId == CurrentUserId);
+
+            modelBuilder.Entity<TransactionTemplate>()
+                .HasQueryFilter(tt => tt.Status == 0 && tt.TenantId == CurrentTenantId && tt.UserId == CurrentUserId);
         }
     }
 }

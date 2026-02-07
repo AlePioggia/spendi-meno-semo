@@ -1,11 +1,8 @@
 ﻿using Expenses.Api.dto.request.transaction;
 using Expenses.Api.dto.response.transaction;
-using Expenses.Application.commands.transactions.createTransaction;
-using Expenses.Application.commands.transactions.deleteTransaction;
-using Expenses.Application.commands.transactions.updateTransaction;
-using Expenses.Application.queries.transactions.getTransactionById;
-using Expenses.Application.queries.transactions.getTransactions;
-using Expenses.Domain.Entities;
+using Expenses.Application.commands.transactions;
+using Expenses.Application.queries.transactions;
+using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
 using FluentValidation;
 using MediatR;

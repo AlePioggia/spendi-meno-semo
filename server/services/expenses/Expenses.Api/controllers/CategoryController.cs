@@ -1,10 +1,8 @@
 ﻿using Expenses.Api.dto.request.category;
 using Expenses.Api.dto.request.transaction;
 using Expenses.Api.dto.response.transaction;
-using Expenses.Application.commands.categories.createCategory;
-using Expenses.Application.commands.categories.deleteCategory;
-using Expenses.Application.queries.categories.getCategories;
-using Expenses.Application.queries.categories.getCategoryById;
+using Expenses.Application.commands.categories;
+using Expenses.Application.queries.categories;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

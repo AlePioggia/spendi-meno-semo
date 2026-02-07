@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Expenses.Domain.Entities.enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +13,7 @@ namespace Expenses.Domain.Entities
         public long CategoryId { get; set; }
         public Category Category { get; set; } = default!;
         public DateTime Date { get; set; }
+        public long? RecurringOperationId { get; set; }
+        public RecurringOperation? RecurringOperation { get; set; }
     }
 }

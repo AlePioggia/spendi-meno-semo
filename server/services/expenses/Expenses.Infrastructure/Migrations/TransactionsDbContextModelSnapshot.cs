@@ -56,6 +56,55 @@ namespace Expenses.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Expenses.Domain.Entities.RecurringOperation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<long>("TemplateId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("TemplateId")
+                        .IsUnique();
+
+                    b.ToTable("RecurringOperations");
+                });
+
             modelBuilder.Entity("Expenses.Domain.Entities.Transaction", b =>
                 {
                     b.Property<long>("Id")
@@ -80,6 +129,9 @@ namespace Expenses.Infrastructure.Migrations
                     b.Property<int>("ExpenseType")
                         .HasColumnType("int");
 
+                    b.Property<long?>("RecurringOperationId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -93,7 +145,68 @@ namespace Expenses.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("RecurringOperationId");
+
                     b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("Expenses.Domain.Entities.TransactionTemplate", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("TransactionTemplates");
+                });
+
+            modelBuilder.Entity("Expenses.Domain.Entities.RecurringOperation", b =>
+                {
+                    b.HasOne("Expenses.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Expenses.Domain.Entities.TransactionTemplate", "Template")
+                        .WithOne()
+                        .HasForeignKey("Expenses.Domain.Entities.RecurringOperation", "TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Template");
                 });
 
             modelBuilder.Entity("Expenses.Domain.Entities.Transaction", b =>
@@ -103,6 +216,11 @@ namespace Expenses.Infrastructure.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Expenses.Domain.Entities.RecurringOperation", "RecurringOperation")
+                        .WithMany("Transactions")
+                        .HasForeignKey("RecurringOperationId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.OwnsOne("Expenses.Domain.Entities.Money", "Amount", b1 =>
                         {
@@ -129,9 +247,51 @@ namespace Expenses.Infrastructure.Migrations
                     b.Navigation("Amount");
 
                     b.Navigation("Category");
+
+                    b.Navigation("RecurringOperation");
+                });
+
+            modelBuilder.Entity("Expenses.Domain.Entities.TransactionTemplate", b =>
+                {
+                    b.HasOne("Expenses.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsOne("Expenses.Domain.Entities.Money", "Amount", b1 =>
+                        {
+                            b1.Property<long>("TransactionTemplateId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("Amount");
+
+                            b1.Property<int>("Currency")
+                                .HasMaxLength(3)
+                                .HasColumnType("int")
+                                .HasColumnName("Currency");
+
+                            b1.HasKey("TransactionTemplateId");
+
+                            b1.ToTable("TransactionTemplates");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionTemplateId");
+                        });
+
+                    b.Navigation("Amount");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Expenses.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Expenses.Domain.Entities.RecurringOperation", b =>
                 {
                     b.Navigation("Transactions");
                 });
