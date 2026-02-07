@@ -2,6 +2,7 @@ using Expenses.Application.repositories;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Expenses.Infrastructure.repositories;
+using System;
 
 namespace Expenses.Infrastructure.scheduled
 {
@@ -9,6 +10,7 @@ namespace Expenses.Infrastructure.scheduled
     {
         private readonly RecurringOperationRepository _recurringOperationRepository;
         private readonly IRepository<Transaction, long> _transactionRepository;
+        private List<RecurringOperation> _recurringOperations;
 
         public RecurringTransactionsJobRunner(
             RecurringOperationRepository recurringOperationRepository,
@@ -16,6 +18,7 @@ namespace Expenses.Infrastructure.scheduled
         {
             _recurringOperationRepository = recurringOperationRepository;
             _transactionRepository = transactionRepository;
+            _recurringOperations = new List<RecurringOperation>();
         }
 
         public async Task RunOnceAsync(CancellationToken cancellationToken)
@@ -35,152 +38,102 @@ namespace Expenses.Infrastructure.scheduled
             foreach (var frequency in frequencies)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var eligibleOperations = await _recurringOperationRepository.GetElegibleOperationsByFrequency(frequency);
-                await InsertTransactionsByFrequency(eligibleOperations, frequency);
+                _recurringOperations = await _recurringOperationRepository.GetElegibleOperationsByFrequency(frequency);
+                await InsertTransactionsByFrequency(frequency);
             }
         }
 
-        private async Task InsertTransactionsByFrequency(List<RecurringOperation> recurrentOperations, RecurringOperationFrequency frequency)
+        private async Task InsertTransactionsByFrequency(RecurringOperationFrequency frequency)
         {
-            switch (frequency)
+            await (frequency switch
             {
-                case RecurringOperationFrequency.Daily:
-                    await InsertDailyRecurringOperation(recurrentOperations);
-                    break;
-                case RecurringOperationFrequency.Weekly:
-                    await InsertWeeklyRecurringOperation(recurrentOperations);
-                    break;
-                case RecurringOperationFrequency.Monthly:
-                    await InsertMonthlyRecurringOperation(recurrentOperations);
-                    break;
-                case RecurringOperationFrequency.Yearly:
-                    await InsertYearlyRecurringOperation(recurrentOperations);
-                    break;
-                default:
-                    break;
-            }
+                RecurringOperationFrequency.Daily => InsertDailyRecurringOperation(),
+                RecurringOperationFrequency.Weekly => InsertWeeklyRecurringOperation(),
+                RecurringOperationFrequency.Monthly => InsertMonthlyRecurringOperation(),
+                RecurringOperationFrequency.Yearly => InsertYearlyRecurringOperation(),
+                _ => Task.CompletedTask
+            });
         }
 
-        private async Task InsertDailyRecurringOperation(List<RecurringOperation> recurringOperations)
+        private async Task InsertDailyRecurringOperation()
         {
-            var now = DateTime.Now;
-            var start = now.Date;
-            var end = start.AddDays(1);
-
-            foreach (var x in recurringOperations)
-            {
-                var alreadyInsertedToday = x.Transactions.Any(y =>
+            await InsertRecurringOperation(
+                x => x.Transactions.Any(y =>
                     y.RecurringOperationId == x.Id &&
-                    y.Date >= start && y.Date < end);
-
-                if (alreadyInsertedToday)
-                    continue;
-
-                await _transactionRepository.AddAsync(new Transaction
-                {
-                    Description = x.Template.Description,
-                    Amount = x.Template.Amount,
-                    ExpenseType = x.Template.TransactionType,
-                    CategoryId = x.Template.CategoryId,
-                    Date = now,
-                    RecurringOperationId = x.Id,
-                    UserId = x.UserId,
-                    TenantId = x.TenantId
-                });
-            }
+                    y.Date >= DateTime.Now.Date && y.Date < DateTime.Now.Date.AddDays(1)),
+                _ => DateTime.Now
+            );
         }
 
-        private async Task InsertWeeklyRecurringOperation(List<RecurringOperation> recurringOperations)
+        private async Task InsertWeeklyRecurringOperation()
         {
             var now = DateTime.Now;
             var weekStart = now.Date.AddDays(-(((int)now.DayOfWeek + 6) % 7));
             var weekEnd = weekStart.AddDays(7);
 
-            foreach (var x in recurringOperations)
-            {
-                var alreadyInsertedThisWeek = x.Transactions.Any(y =>
+            await InsertRecurringOperation(
+                x => x.Transactions.Any(y =>
                     y.RecurringOperationId == x.Id &&
-                    y.Date >= weekStart && y.Date < weekEnd);
-
-                if (alreadyInsertedThisWeek)
-                    continue;
-
-                var day = Math.Min(x.Template.Date.Day, DateTime.DaysInMonth(now.Year, now.Month));
-                var insertDate = new DateTime(now.Year, now.Month, day, 0, 0, 0, DateTimeKind.Local);
-
-                await _transactionRepository.AddAsync(new Transaction
+                    y.Date >= weekStart && y.Date < weekEnd),
+                x =>
                 {
-                    Description = x.Template.Description,
-                    Amount = x.Template.Amount,
-                    ExpenseType = x.Template.TransactionType,
-                    CategoryId = x.Template.CategoryId,
-                    Date = insertDate,
-                    RecurringOperationId = x.Id,
-                    UserId = x.UserId,
-                    TenantId = x.TenantId
-                });
-            }
+                    var day = Math.Min(
+                       x.Template.Date.Day,
+                       DateTime.DaysInMonth(now.Year, now.Month));
+
+                    return new DateTime(now.Year, now.Month, day, 0, 0, 0, DateTimeKind.Local);
+                }
+            );
         }
 
-        private async Task InsertMonthlyRecurringOperation(List<RecurringOperation> recurringOperations)
+        private async Task InsertMonthlyRecurringOperation()
         {
-            var now = DateTime.Now;
-
-            foreach (var x in recurringOperations)
-            {
-                var alreadyInsertedThisMonth = x.Transactions.Any(y =>
+            await InsertRecurringOperation(
+                x => x.Transactions.Any(y =>
                     y.RecurringOperationId == x.Id &&
-                    y.Date.Year == now.Year &&
-                    y.Date.Month == now.Month);
-
-                if (alreadyInsertedThisMonth)
-                    continue;
-
-                var day = Math.Min(x.Template.Date.Day, DateTime.DaysInMonth(now.Year, now.Month));
-                var insertDate = new DateTime(now.Year, now.Month, day, 0, 0, 0, DateTimeKind.Local);
-
-                await _transactionRepository.AddAsync(new Transaction
+                    y.Date.Year == DateTime.Now.Year &&
+                    y.Date.Month == DateTime.Now.Month),
+                x =>
                 {
-                    Description = x.Template.Description,
-                    Amount = x.Template.Amount,
-                    ExpenseType = x.Template.TransactionType,
-                    CategoryId = x.Template.CategoryId,
-                    Date = insertDate,
-                    RecurringOperationId = x.Id,
-                    UserId = x.UserId,
-                    TenantId = x.TenantId
-                });
-            }
+                    var day = Math.Min(
+                        x.Template.Date.Day,
+                        DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                    return new DateTime(DateTime.Now.Year, DateTime.Now.Month, day, 0, 0, 0, DateTimeKind.Local);
+                }
+            );
         }
 
-        private async Task InsertYearlyRecurringOperation(List<RecurringOperation> recurringOperations)
+        private async Task InsertYearlyRecurringOperation()
         {
-            var now = DateTime.Now;
-
-            foreach (var x in recurringOperations)
-            {
-                var alreadyInsertedThisYear = x.Transactions.Any(y =>
+            await InsertRecurringOperation(
+                x => x.Transactions.Any(y =>
                     y.RecurringOperationId == x.Id &&
-                    y.Date.Year == now.Year);
+                    y.Date.Year == DateTime.Now.Year),
+                x =>
+                {
+                    var month = x.Template.Date.Month;
+                    var day = Math.Min(x.Template.Date.Day, DateTime.DaysInMonth(DateTime.Now.Year, month));
+                    return new DateTime(DateTime.Now.Year, month, day, 0, 0, 0, DateTimeKind.Local);
+                }
+            );
+        }
 
-                if (alreadyInsertedThisYear)
-                    continue;
-
-                var month = x.Template.Date.Month;
-                var day = Math.Min(x.Template.Date.Day, DateTime.DaysInMonth(now.Year, month));
-                var insertDate = new DateTime(now.Year, month, day, 0, 0, 0, DateTimeKind.Local);
-
+        private async Task InsertRecurringOperation(Predicate<RecurringOperation> predicate, Func<RecurringOperation, DateTime> dateFactory)
+        {
+            foreach (var x in _recurringOperations)
+            {
+                if (predicate(x)) continue;
                 await _transactionRepository.AddAsync(new Transaction
                 {
                     Description = x.Template.Description,
                     Amount = x.Template.Amount,
                     ExpenseType = x.Template.TransactionType,
                     CategoryId = x.Template.CategoryId,
-                    Date = insertDate,
+                    Date = dateFactory(x),
                     RecurringOperationId = x.Id,
                     TenantId = x.TenantId,
                     UserId = x.UserId
-                });
+                }); 
             }
         }
     }
