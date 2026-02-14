@@ -69,7 +69,7 @@ namespace Expenses.Api.controllers
                     category.Id,
                     category.Name ?? "",
                     category.Description ?? "",
-                    category.UserId,
+                    category.UserId ?? "",
                     category.TenantId,
                     category.CreatedAt
                 )).ToList();

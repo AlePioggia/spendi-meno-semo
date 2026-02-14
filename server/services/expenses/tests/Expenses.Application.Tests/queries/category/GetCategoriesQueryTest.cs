@@ -22,7 +22,7 @@ namespace Expenses.Application.Tests.queries.category
                 Id = firstId,
                 Name = "Category 1",
                 Description = "Description 1",
-                UserId = firstId,
+                UserId = "",
                 TenantId = firstId,
                 CreatedAt = DateTime.Now,
             });
@@ -31,7 +31,7 @@ namespace Expenses.Application.Tests.queries.category
                 Id = secondId,
                 Name = "Category 2",
                 Description = "Description 2",
-                UserId = secondId,
+                UserId = "",
                 TenantId = secondId,
                 CreatedAt = DateTime.Now,
             });

@@ -12,7 +12,7 @@ namespace Expenses.Infrastructure.Persistence
     {
         public TransactionsDbContext CreateDbContext(string[] args)
         {
-            var connectionString = Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING");
+            var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING");
             
             var optionsBuilder = new DbContextOptionsBuilder<TransactionsDbContext>();
 
@@ -21,7 +21,7 @@ namespace Expenses.Infrastructure.Persistence
             IExecutionContext executionContext = new Expenses.Application.contexts.ExecutionContext
             {
                 TenantId = 1,
-                UserId = 1
+                UserId = "1"
             };
 
             return new TransactionsDbContext(optionsBuilder.Options, executionContext);

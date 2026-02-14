@@ -20,7 +20,7 @@ namespace Expenses.Application.Tests.commands.transactions
 
             repositoryMock
                 .Setup(r => r.GetByIdAsync(1))
-                .ReturnsAsync(new Transaction { Id = 1, TenantId = 1, UserId = 1 });
+                .ReturnsAsync(new Transaction { Id = 1, TenantId = 1, UserId = "" });
 
             repositoryMock
                 .Setup(r => r.UpdateAsync(It.IsAny<Transaction>()))

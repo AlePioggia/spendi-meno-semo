@@ -15,7 +15,7 @@ namespace Expenses.Application.Tests.commands.recurringTransactions
         {
             var repositoryMock = new Mock<IRepository<RecurringOperation, long>>();
             var executionContextMock = new Mock<IExecutionContext>();
-            executionContextMock.SetupGet(x => x.UserId).Returns(1);
+            executionContextMock.SetupGet(x => x.UserId).Returns("");
             executionContextMock.SetupGet(x => x.TenantId).Returns(1);
 
             var existing = new RecurringOperation
@@ -23,8 +23,8 @@ namespace Expenses.Application.Tests.commands.recurringTransactions
                 Id = 1,
                 CategoryId = 1,
                 TemplateId = 10,
-                Template = new TransactionTemplate { Id = 10, UserId = 1, TenantId = 1 },
-                UserId = 1,
+                Template = new TransactionTemplate { Id = 10, UserId = "", TenantId = 1 },
+                UserId = "",
                 TenantId = 1
             };
 

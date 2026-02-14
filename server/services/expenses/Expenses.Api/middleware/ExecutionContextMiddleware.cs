@@ -1,4 +1,5 @@
 using Expenses.Application.contexts;
+using System.Security.Claims;
 
 namespace Expenses.Api.middleware
 {
@@ -13,7 +14,8 @@ namespace Expenses.Api.middleware
 
         public async Task InvokeAsync(HttpContext httpContext, Expenses.Application.contexts.ExecutionContext executionContext)
         {
-            executionContext.UserId = 1;
+            var subject = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            executionContext.UserId = subject ?? "";
             executionContext.TenantId = 1;
 
             await _next(httpContext);

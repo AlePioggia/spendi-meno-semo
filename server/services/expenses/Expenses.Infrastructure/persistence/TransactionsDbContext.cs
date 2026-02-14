@@ -13,7 +13,7 @@ namespace Expenses.Infrastructure.persistence
         private readonly IExecutionContext _executionContext;
 
         public long CurrentTenantId => _executionContext.TenantId;
-        public long CurrentUserId => _executionContext.UserId;
+        public string CurrentUserId => _executionContext.UserId;
 
         public TransactionsDbContext(
             DbContextOptions<TransactionsDbContext> options,

@@ -4,7 +4,7 @@
         long Id,
         string Name,
         string Description,
-        long UserId,
+        string UserId,
         long TenantId,
         DateTime CreatedAt
     );

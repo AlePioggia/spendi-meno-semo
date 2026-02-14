@@ -17,7 +17,14 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var isDevelopment = builder.Environment.IsDevelopment();
+DotNetEnv.Env.Load();
+
+var isRunningInContainer = string.Equals(
+    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+    "true",
+    StringComparison.OrdinalIgnoreCase);
+
+bool isDevelopment = true;
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -31,8 +38,6 @@ if (isDevelopment)
 {
     builder.WebHost.UseUrls("http://localhost:5116");
 }
-
-DotNetEnv.Env.Load();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -134,16 +139,13 @@ if (isDevelopment)
 }
 
 builder.Services.AddApplication();
-if (isDevelopment)
-{
-    var connectionString = Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING") ?? "";
-    builder.Services.AddInfrastructure(connectionString);
-} else
-{
-    //var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "";
-    //builder.Services.AddInfrastructure(connectionString);
-    builder.Services.AddInfrastructure(builder.Configuration);
-}
+
+var connectionString = isRunningInContainer
+    ? Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+    : (Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING")
+        ?? Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
+
+builder.Services.AddInfrastructure(connectionString ?? "");
 
 builder.Services.AddHostedService<RecurringTransactionsJob>();
 
@@ -154,8 +156,14 @@ var app = builder.Build();
 
 if (!isDevelopment)
 {
-    app.UseExceptionHandler();
+    app.UseExceptionHandler(exceptionApp =>
+    {
+        exceptionApp.Run(context =>
+            Results.Problem(title: "An unexpected error occurred.")
+                .ExecuteAsync(context));
+    });
 }
+
 
 app.UseForwardedHeaders();
 

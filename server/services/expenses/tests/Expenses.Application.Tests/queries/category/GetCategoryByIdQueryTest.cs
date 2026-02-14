@@ -20,7 +20,7 @@ namespace Expenses.Application.Tests.queries.category
                 Id = fakeId,
                 Name = "Food",
                 Description = "Indicates money spent on food!",
-                UserId = fakeId,
+                UserId = "",
                 TenantId = fakeId,
                 CreatedAt = DateTime.UtcNow
             };

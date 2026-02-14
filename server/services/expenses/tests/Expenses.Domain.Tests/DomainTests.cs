@@ -15,7 +15,7 @@ namespace Expenses.Domain
                 Description = "Description",
                 Amount = new Money(100, Currency.USD),
                 ExpenseType = TransactionType.Expense,
-                UserId = 0,
+                UserId = "",
                 TenantId = 0,
                 CategoryId = 0,
                 Date = DateTime.UtcNow,
@@ -27,7 +27,7 @@ namespace Expenses.Domain
             Assert.Equal(100, expense.Amount?.Amount);
             Assert.Equal(Currency.USD, expense.Amount?.Currency);
             Assert.Equal(TransactionType.Expense, expense.ExpenseType);
-            Assert.Equal(0, expense.UserId);
+            Assert.Equal("", expense.UserId);
             Assert.Equal(0, expense.TenantId);
             Assert.Equal(0, expense.CategoryId);
             Assert.True((DateTime.UtcNow - expense.Date).TotalSeconds < 5);

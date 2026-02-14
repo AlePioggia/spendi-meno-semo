@@ -17,7 +17,7 @@ namespace Expenses.Application.Tests.commands.category
         {
             var repositoryMock = new Mock<IRepository<Category, long>>();
             var executionContextMock = new Mock<IExecutionContext>();
-            executionContextMock.SetupGet(x => x.UserId).Returns(1);
+            executionContextMock.SetupGet(x => x.UserId).Returns("");
             executionContextMock.SetupGet(x => x.TenantId).Returns(1);
 
             repositoryMock

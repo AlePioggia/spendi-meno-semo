@@ -16,7 +16,7 @@ namespace Expenses.Application.Tests.commands.transactions
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
             var executionContextMock = new Mock<IExecutionContext>();
-            executionContextMock.SetupGet(x => x.UserId).Returns(1);
+            executionContextMock.SetupGet(x => x.UserId).Returns("");
             executionContextMock.SetupGet(x => x.TenantId).Returns(1);
             long fakeId = 1;
 
