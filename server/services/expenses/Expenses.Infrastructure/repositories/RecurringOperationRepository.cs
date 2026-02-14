@@ -36,7 +36,9 @@ namespace Expenses.Infrastructure.repositories
             return await _dbContext.Set<RecurringOperation>()
                 .IgnoreQueryFilters()
                 .Include(x => x.Template)
+                .Where(x => x.Template.Status == 0)
                 .Include(x => x.Category)
+                .Where(x => x.Category.Status == 0)
                 .ToListAsync();
         }
 
@@ -66,6 +68,8 @@ namespace Expenses.Infrastructure.repositories
                 .Include(x => x.Transactions)
                 .IgnoreQueryFilters()
                 .Where(x => x.Frequency == frequency)
+                .Where(x => x.Template.Status == 0)
+                .Where(x => x.Category.Status == 0)
                 .AsSplitQuery()
                 .AsNoTracking()
                 .ToListAsync();
