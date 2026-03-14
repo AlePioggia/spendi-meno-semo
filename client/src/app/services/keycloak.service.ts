@@ -1,7 +1,4 @@
 import Keycloak from 'keycloak-js';
+import { environment } from '../../environments/environment';
 
-export const keycloak = new Keycloak({
-  url: 'http://localhost:8080',
-  realm: 'myapp',
-  clientId: 'angular-app'
-});
+export const keycloak = new Keycloak(environment.keycloak);

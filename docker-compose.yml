@@ -19,8 +19,8 @@ services:
     ports:
       - "5001:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=${SQL_CONNECTION_STRING}
-      - ASPNETCORE_ENVIRONMENT=Development
+      - SQL_CONNECTION_STRING=${SQL_CONNECTION_STRING}
+      - ASPNETCORE_ENVIRONMENT=Production
     networks:
       - app-network
     depends_on:

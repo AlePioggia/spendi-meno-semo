@@ -6,12 +6,13 @@ import {
   TransactionResponseDto,
   UpdateTransactionRequestDto
 } from '../interfaces/transaction.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5116/api/transaction';
+  private apiUrl = `${environment.apiUrl}/api/transaction`;
 
   getTransactions(): Observable<TransactionResponseDto[]> {
     return this.http.get<TransactionResponseDto[]>(this.apiUrl);

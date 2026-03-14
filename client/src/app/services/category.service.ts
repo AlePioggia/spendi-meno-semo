@@ -2,12 +2,13 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import { CategoryRequestDto, CategoryResponseDto } from "../interfaces/category.interface";
+import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5116/api/category';
+  private apiUrl = `${environment.apiUrl}/api/category`;
 
   getCategories(): Observable<CategoryResponseDto[]> {
     return this.http.get<CategoryResponseDto[]>(this.apiUrl);

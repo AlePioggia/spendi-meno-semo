@@ -19,12 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 DotNetEnv.Env.Load();
 
-var isRunningInContainer = string.Equals(
-    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
-    "true",
-    StringComparison.OrdinalIgnoreCase);
-
-bool isDevelopment = true;
+bool isDevelopment = builder.Environment.IsDevelopment();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -44,19 +39,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-if (isDevelopment)
+builder.Services.AddCors(options =>
 {
-    builder.Services.AddCors(options =>
+    options.AddPolicy("AllowAngularDev", policy =>
     {
-        options.AddPolicy("AllowAngularDev", policy =>
-        {
-            policy.WithOrigins("http://localhost:4200")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+        policy.WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
     });
-}
+});
+
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -81,12 +74,11 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-
         var authorityFromConfig = builder.Configuration["Auth:Authority"]
             ?? Environment.GetEnvironmentVariable("AUTH_AUTHORITY");
         var defaultAuthority = isDevelopment
             ? "http://localhost:8080/realms/myapp"
-            : "http://host.docker.internal:8080/realms/myapp";
+            : "http://keycloak:8080/realms/myapp";
 
         options.Authority = string.IsNullOrWhiteSpace(authorityFromConfig) ? defaultAuthority : authorityFromConfig;
         options.RequireHttpsMetadata = options.Authority.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
@@ -102,7 +94,7 @@ builder.Services
 
             IssuerValidator = (issuer, token, parameters) =>
             {
-                if (string.Equals(issuer, options.Authority, StringComparison.OrdinalIgnoreCase))
+                if (issuer.Contains("8080/realms/myapp"))
                     return issuer;
                 throw new SecurityTokenInvalidIssuerException($"Invalid issuer: {issuer}");
             }
@@ -140,7 +132,7 @@ if (isDevelopment)
 
 builder.Services.AddApplication();
 
-var connectionString = isRunningInContainer
+var connectionString = !isDevelopment
     ? Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
     : (Environment.GetEnvironmentVariable("LOCAL_CONNECTION_STRING")
         ?? Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
@@ -197,12 +189,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-if (isDevelopment)
-{
-    app.UseCors("AllowAngularDev");
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseCors("AllowAngularDev");
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseRateLimiter();
 app.UseAuthentication();

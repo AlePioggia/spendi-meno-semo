@@ -5,12 +5,13 @@ import {
   GetRecurringTransactionResponseDto,
   RecurringOperationUpsertRequestDto
 } from '../interfaces/recurring-transaction.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RecurringTransactionService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5116/api/recurringTransaction';
+  private apiUrl = `${environment.apiUrl}/api/recurringTransaction`;
 
   getRecurringTransactions(): Observable<GetRecurringTransactionResponseDto[]> {
     return this.http.get<GetRecurringTransactionResponseDto[]>(this.apiUrl);
