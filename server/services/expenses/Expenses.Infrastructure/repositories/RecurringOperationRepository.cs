@@ -75,5 +75,13 @@ namespace Expenses.Infrastructure.repositories
                 .ToListAsync();
         }
 
+        public async Task<List<RecurringOperation>> GetAllWithPredicate(Predicate<RecurringOperation> predicate)
+        {
+            return await _dbContext.Set<RecurringOperation>()
+                .Include(x => x.Template)
+                .Include(x => x.Category)
+                .Where(x => predicate(x))
+                .ToListAsync();
+        }
     }
 }

@@ -7,6 +7,7 @@ export interface CreateTransactionRequestDto {
   transactionType: TransactionType;
   categoryId: number;
   date: string;
+  isProxyTransaction?: boolean;
 }
 
 export interface UpdateTransactionRequestDto {
@@ -17,6 +18,7 @@ export interface UpdateTransactionRequestDto {
   currency: string;
   date: string;
   categoryId: number;
+  isProxyTransaction?: boolean;
 }
 
 export interface TransactionResponseDto {
@@ -28,4 +30,5 @@ export interface TransactionResponseDto {
   categoryId: number;
   date: Date;
   createdAt: Date;
+  isProxyTransaction: boolean;
 }

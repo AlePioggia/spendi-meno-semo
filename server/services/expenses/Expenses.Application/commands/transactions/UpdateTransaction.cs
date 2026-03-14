@@ -14,7 +14,8 @@ namespace Expenses.Application.commands.transactions
         TransactionType transactionType,
         Currency currency,
         long categoryId,
-        DateTime date
+        DateTime date,
+        bool isProxyTransaction = false
     ) : IRequest;
 
     public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand>
@@ -41,6 +42,7 @@ namespace Expenses.Application.commands.transactions
             transaction.ExpenseType = command.transactionType;
             transaction.CategoryId = command.categoryId;
             transaction.Date = command.date;
+            transaction.IsProxyTransaction = command.isProxyTransaction;
 
             await _repository.UpdateAsync(transaction);
         }

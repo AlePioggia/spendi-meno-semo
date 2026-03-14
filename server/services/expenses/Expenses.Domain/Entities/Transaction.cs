@@ -15,5 +15,6 @@ namespace Expenses.Domain.Entities
         public DateTime Date { get; set; }
         public long? RecurringOperationId { get; set; }
         public RecurringOperation? RecurringOperation { get; set; }
+        public bool IsProxyTransaction { get; set; }
     }
 }
