@@ -108,11 +108,13 @@
         <td [attr.colspan]="columns.length + (config.showActions ? 1 : 0)">Nessun risultato con i filtri correnti.</td>
       </tr>
 
-      <tr *ngFor="let row of filteredData()" class="data-row" (dblclick)="onRowDoubleClick(row)">
-        <td *ngFor="let col of columns" [ngClass]="getCellClasses(row, col)">
-          {{ formatRowValue(row, col) }}
-        </td>
-        <td class="actions-cell" *ngIf="config.showActions">
+    <tr *ngFor="let row of filteredData()" class="data-row" (dblclick)="onRowDoubleClick(row)">
+    <td *ngFor="let col of columns">
+        <span [ngClass]="getCellClasses(row, col)">
+        {{ formatRowValue(row, col) }}
+        </span>
+    </td>
+    <td class="actions-cell" *ngIf="config.showActions">
           <button
             mat-icon-button
             (click)="onRowAction('edit', row)"

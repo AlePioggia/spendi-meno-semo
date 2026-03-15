@@ -144,7 +144,6 @@
   text-align: right;
 }
 
-/* Data rows */
 tbody tr.data-row {
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   transition: background-color 0.2s;
@@ -154,11 +153,8 @@ tbody tr.data-row:hover {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Categoria badge styling */
-td.cat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+span.cat {
+  display: inline-block;
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid #bfdbfe;
@@ -168,8 +164,6 @@ td.cat {
   font-size: 12px;
 }
 
-
-/* Amount with income/expense colors */
 td.amount-cell {
   font-weight: 800;
   text-align: right;

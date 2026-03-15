@@ -55,6 +55,7 @@ export class CategoryPage {
       {
         key: 'name',
         label: 'Nome',
+        cellClassName: 'cat',
         type: 'string',
       },
       {
