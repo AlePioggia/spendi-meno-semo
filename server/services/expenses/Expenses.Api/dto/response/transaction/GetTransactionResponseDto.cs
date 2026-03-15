@@ -10,6 +10,7 @@ namespace Expenses.Api.dto.response.transaction
         string ExpenseType,
         long CategoryId,
         DateTime Date,
-        DateTime CreatedAt
+        DateTime CreatedAt,
+        bool IsProxyTransaction
     );
 }

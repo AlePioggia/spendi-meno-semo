@@ -29,6 +29,7 @@ export interface TransactionCreateDialogData {
   initialDate: string;
   mode?: TransactionDialogMode;
   transaction?: TransactionResponseDto;
+  isProxyTransaction?: boolean;
 }
 
 @Component({
@@ -69,13 +70,14 @@ export interface TransactionCreateDialogData {
           matInput
           [matDatepicker]="picker"
           [value]="date()"
+          [min]="minDate()"
           (dateChange)="date.set($event.value ?? date())"
         />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
+      <mat-form-field appearance="fill" class="full-width" *ngIf="!isProxyTransaction">
         <mat-label>Tipo</mat-label>
         <mat-select [value]="transactionType()" (selectionChange)="transactionType.set($event.value)">
           <mat-option value="Expense">Spesa</mat-option>
@@ -124,17 +126,25 @@ export class TransactionCreateDialog {
   private data = inject<TransactionCreateDialogData>(MAT_DIALOG_DATA);
 
   categories = this.data.categories;
+  isProxyTransaction = this.data.isProxyTransaction ?? false;
 
   private readonly mode: TransactionDialogMode = this.data.mode ?? 'create';
   private readonly existing = this.data.transaction;
+  private readonly today = new Date();
 
   title = computed(() => (this.mode === 'edit' ? 'Modifica transazione' : 'Nuova transazione'));
   confirmLabel = computed(() => (this.mode === 'edit' ? 'Salva' : 'Aggiungi'));
 
+  minDate = computed(() => {
+    const d = new Date(this.today);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
+
   description = signal(this.existing?.description ?? '');
   amount = signal(this.existing ? String(this.existing.amount) : '');
   date = signal(this.toLocalDate(this.existing?.date ?? this.data.initialDate));
-  transactionType = signal<TransactionType>(this.existing?.expenseType ?? 'Expense');
+  transactionType = signal<TransactionType>(this.existing?.expenseType ?? (this.isProxyTransaction ? 'Expense' : 'Expense'));
   categoryId = signal<number>(this.existing?.categoryId ?? (this.data.categories[0]?.id ?? 0));
 
   canConfirm = computed(() => {
@@ -160,7 +170,8 @@ export class TransactionCreateDialog {
         currency: 'EUR',
         transactionType: this.transactionType(),
         categoryId: this.categoryId(),
-        date: dateKey
+        date: dateKey,
+        ...(this.isProxyTransaction && { isProxyTransaction: true })
       };
       const result: TransactionDialogResult = { mode: 'edit', id: this.existing.id, request };
       this.dialogRef.close(result);
@@ -171,9 +182,10 @@ export class TransactionCreateDialog {
       description: this.description().trim() || undefined,
       amount: Number(this.amount()),
       currency: 'EUR',
-      transactionType: this.transactionType(),
+      transactionType: this.isProxyTransaction ? 'Expense' : this.transactionType(),
       categoryId: this.categoryId(),
-      date: dateKey
+      date: dateKey,
+      ...(this.isProxyTransaction && { isProxyTransaction: true })
     };
 
     const result: TransactionDialogResult = { mode: 'create', request };

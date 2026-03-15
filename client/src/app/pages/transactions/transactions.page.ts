@@ -439,7 +439,7 @@ export class TransactionsPage {
   private loadTransactions() {
     this.transactionService.getTransactions().subscribe({
       next: (txs) => {
-        this.allTransactions.set(txs);
+        this.allTransactions.set(txs.filter(tx => !tx.isProxyTransaction));
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
