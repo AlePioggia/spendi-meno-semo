@@ -20,6 +20,8 @@ import {
 import { InputFieldComponent } from '../../shared/input-field/input-field/input-field.component';
 import { CommonModule } from '@angular/common';
 import { CategoryCreateDialog } from './category-create.dialog';
+import { TableViewConfig } from '../../shared/table-view/table-column.interface';
+import { TableViewComponent } from '../../shared/table-view/table-view.component';
 
 @Component({
   standalone: true,
@@ -36,7 +38,8 @@ import { CategoryCreateDialog } from './category-create.dialog';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatTooltipModule,
-    InputFieldComponent
+    InputFieldComponent,
+    TableViewComponent
   ]
 })
 export class CategoryPage {
@@ -47,14 +50,39 @@ export class CategoryPage {
   categories = signal<CategoryResponseDto[]>([]);
   loading = signal(false);
 
-  displayedColumns = ['name', 'description', 'createdAt', 'actions'];
+  tableConfig: TableViewConfig<CategoryResponseDto> = {
+    columns: [
+      {
+        key: 'name',
+        label: 'Nome',
+        type: 'string',
+      },
+      {
+        key: 'description',
+        label: 'Descrizione',
+        type: 'string'
+      },
+      {
+        key: 'createdAt',
+        label: 'Creata il',
+        type: 'date',
+        formatter: (value) => {
+          const date = new Date(value);
+          return new Intl.DateTimeFormat('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }).format(date);
+        }
+      },
+    ],
+    sortable: true,
+    filterable: true,
+    showActions: true,
+  }
 
   constructor() {
     this.load();
-  }
-
-  load() {
-    this.categoryService.getCategories().subscribe(this.categories.set);
   }
 
   deleteCategory(id: number) {
@@ -78,5 +106,23 @@ export class CategoryPage {
         error: () => this.loading.set(false)
       });
     });
+  }
+
+  private load() {
+    this.loading.set(true);
+
+    this.categoryService.getCategories().subscribe({
+      next: (cats) => {
+        this.categories.set(cats);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  onTableRowAction(event: { action: string; row: CategoryResponseDto }) {
+      if (event.action === 'delete') {
+        this.deleteCategory(event.row.id);
+      }
   }
 }
