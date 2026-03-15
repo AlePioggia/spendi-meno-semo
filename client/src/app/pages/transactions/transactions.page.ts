@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { TableViewComponent } from '../../shared/table-view/table-view.component';
+import { TableViewConfig, TableColumnConfig } from '../../shared/table-view/table-column.interface';
 import { CategoryService } from '../../services/category.service';
 import { TransactionService } from '../../services/transaction.service';
 import { CategoryResponseDto } from '../../interfaces/category.interface';
@@ -54,7 +56,8 @@ type DayVm = {
     MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TableViewComponent
   ]
 })
 export class TransactionsPage {
@@ -94,6 +97,62 @@ export class TransactionsPage {
   categories = signal<CategoryResponseDto[]>([]);
   allTransactions = signal<TransactionResponseDto[]>([]);
 
+  tableConfig: TableViewConfig<TransactionResponseDto> = {
+    columns: [
+      {
+        key: 'date' as const,
+        label: 'Data',
+        type: 'date',
+        formatter: (value) => {
+          const date = new Date(value);
+          return new Intl.DateTimeFormat('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }).format(date);
+        }
+      },
+      {
+        key: 'categoryId' as const,
+        label: 'Categoria',
+        type: 'string',
+        cellClassName: 'cat',
+        formatter: (value) => {
+          const cat = this.categories().find(c => c.id === value);
+          return cat?.name ?? `#${value}`;
+        }
+      },
+      {
+        key: 'description' as const,
+        label: 'Descrizione',
+        type: 'string'
+      },
+      {
+        key: 'expenseType' as const,
+        label: 'Tipo',
+        type: 'enum',
+        enumMap: {
+          'Expense': 'Spesa',
+          'Income': 'Entrata'
+        }
+      },
+      {
+        key: 'amount' as const,
+        label: 'Importo',
+        type: 'number',
+        cellClassName: 'amount-cell',
+        formatter: (value) => {
+          const amount = Number(value);
+          return `${amount >= 0 ? '+' : '-'}${Math.abs(amount).toFixed(2)} €`;
+        }
+      }
+    ],
+    sortable: true,
+    filterable: true,
+    showActions: true,
+    summaryField: 'amount' as const
+  };
+
   constructor() {
     this.load();
   }
@@ -101,6 +160,14 @@ export class TransactionsPage {
   monthLabel = computed(() => {
     const value = this.month();
     return new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(value);
+  });
+
+  transactionsForMonthComputed = computed(() => {
+    const { start, end } = this.monthRange();
+    return this.allTransactions().filter(tx => {
+      const d = this.toLocalDate(tx.date);
+      return d >= start && d <= end;
+    });
   });
 
   private monthRange = computed(() => {
@@ -423,6 +490,14 @@ export class TransactionsPage {
       },
       error: () => this.loading.set(false)
     });
+  }
+
+  onTableRowAction(event: { action: string; row: TransactionResponseDto }) {
+    if (event.action === 'edit') {
+      this.openEditDialog(event.row);
+    } else if (event.action === 'delete') {
+      this.deleteTransaction(event.row.id);
+    }
   }
 
   private load() {

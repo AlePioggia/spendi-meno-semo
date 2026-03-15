@@ -10,8 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSelectModule } from '@angular/material/select';
 
+import { TableViewComponent } from '../../shared/table-view/table-view.component';
+import { TableViewConfig } from '../../shared/table-view/table-column.interface';
 import { TransactionService } from '../../services/transaction.service';
 import { CategoryService } from '../../services/category.service';
 import { TransactionType, TransactionResponseDto } from '../../interfaces/transaction.interface';
@@ -40,36 +41,75 @@ import {
     MatDialogModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatSelectModule
+    TableViewComponent
   ]
 })
 export class ProxyTransactionsPage {
   private readonly transactionsService = inject(TransactionService);
   private readonly categoryService = inject(CategoryService);
   private readonly dialog = inject(MatDialog);
-  
-  private readonly italianNumericDateFormatter = new Intl.DateTimeFormat('it-IT', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
 
   private readonly today = new Date();
-  private proxyTransactions = signal<TransactionResponseDto[]>([]);
+  proxyTransactions = signal<TransactionResponseDto[]>([]);
   loading = signal(false);
-  private isProxyDialog = false;
-  
-  tableFilterDate = signal('');
-  tableFilterCategory = signal('');
-  tableFilterDescription = signal('');
-  tableFilterType = signal<'All' | TransactionType>('All');
-  tableFilterAmountMin = signal('');
-  tableFilterAmountMax = signal('');
-
-  tableSortField = signal<'date' | 'category' | 'description' | 'type' | 'amount'>('date');
-  tableSortDir = signal<'asc' | 'desc'>('asc');
   categories = signal<CategoryResponseDto[]>([]);
-  
+
+  tableConfig: TableViewConfig<TransactionResponseDto> = {
+    columns: [
+      {
+        key: 'date',
+        label: 'Data',
+        type: 'date',
+        className: 'col-date',
+        formatter: (value) =>
+          new Intl.DateTimeFormat('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }).format(this.toLocalDate(value))
+      },
+      {
+        key: 'categoryId',
+        label: 'Categoria',
+        type: 'string',
+        className: 'col-cat',
+        cellClassName: 'cat',
+        formatter: (value) => this.categoryName(value)
+      },
+      {
+        key: 'description',
+        label: 'Descrizione',
+        type: 'string',
+        cellClassName: 'desc-cell'
+      },
+      {
+        key: 'expenseType',
+        label: 'Tipo',
+        type: 'enum',
+        className: 'col-type',
+        enumMap: {
+          'Expense': 'Spesa',
+          'Income': 'Entrata'
+        }
+      },
+      {
+        key: 'amount',
+        label: 'Importo',
+        type: 'number',
+        className: 'col-amt',
+        cellClassName: 'amount-cell',
+        formatter: (value) => {
+          const amount = Number(value);
+          return `${amount >= 0 ? '+' : '-'}${Math.abs(amount).toFixed(2)} €`;
+        }
+      }
+    ],
+    summaryField: 'amount',
+    sortable: true,
+    filterable: true,
+    showActions: true
+  };
+
   constructor() {
     this.load();
   }
@@ -90,10 +130,10 @@ export class ProxyTransactionsPage {
       next: (transactions) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const proxyTxs = transactions.filter(t => {
           if (!t.isProxyTransaction) return false;
-          
+
           const txDate = this.toLocalDate(t.date);
           return txDate >= today;
         });
@@ -107,145 +147,14 @@ export class ProxyTransactionsPage {
     });
   }
 
-  filteredTransactions = computed(() => {
-    const dateFilter = this.normalize(this.tableFilterDate());
-    const categoryFilter = this.normalize(this.tableFilterCategory());
-    const descriptionFilter = this.normalize(this.tableFilterDescription());
-    const typeFilter = this.tableFilterType();
+  onTableRowAction(event: { action: string; row: TransactionResponseDto }) {
+    const { action, row } = event;
 
-    const minStr = this.tableFilterAmountMin().trim();
-    const maxStr = this.tableFilterAmountMax().trim();
-
-    const min = minStr.length ? Number(minStr) : NaN;
-    const max = maxStr.length ? Number(maxStr) : NaN;
-    const hasMin = minStr.length > 0 && Number.isFinite(min);
-    const hasMax = maxStr.length > 0 && Number.isFinite(max);
-
-    return this.proxyTransactions().filter(tx => {
-      if (typeFilter !== 'All' && tx.expenseType !== typeFilter) return false;
-
-      if (dateFilter) {
-        const dateText = this.normalize(this.formatDayNumeric(tx.date));
-        const dateKey = this.normalize(this.toDayKey(tx.date));
-        if (!dateText.includes(dateFilter) && !dateKey.includes(dateFilter)) return false;
-      }
-
-      if (categoryFilter) {
-        const cat = this.normalize(this.categoryName(tx.categoryId));
-        if (!cat.includes(categoryFilter)) return false;
-      }
-
-      if (descriptionFilter) {
-        const desc = this.normalize(tx.description ?? '');
-        if (!desc.includes(descriptionFilter)) return false;
-      }
-
-      const amount = Number(tx.amount);
-      if (hasMin && amount < min) return false;
-      if (hasMax && amount > max) return false;
-
-      return true;
-    });
-  });
-
-  tableRows = computed(() => {
-    const list = [...this.filteredTransactions()];
-    const field = this.tableSortField();
-    const dir = this.tableSortDir();
-    const mul = dir === 'asc' ? 1 : -1;
-
-    const compareString = (a: string, b: string) => a.localeCompare(b, 'it-IT', { sensitivity: 'base' });
-
-    list.sort((a, b) => {
-      if (field === 'date') {
-        const byDate = this.toLocalDate(a.date).getTime() - this.toLocalDate(b.date).getTime();
-        if (byDate !== 0) return byDate * mul;
-        const byCreated = this.toLocalDate(a.createdAt).getTime() - this.toLocalDate(b.createdAt).getTime();
-        return byCreated * mul;
-      }
-
-      if (field === 'amount') {
-        const byAmount = (Number(a.amount) - Number(b.amount)) * mul;
-        if (byAmount !== 0) return byAmount;
-        return (this.toLocalDate(a.date).getTime() - this.toLocalDate(b.date).getTime()) * mul;
-      }
-
-      if (field === 'category') {
-        return compareString(this.categoryName(a.categoryId), this.categoryName(b.categoryId)) * mul;
-      }
-
-      if (field === 'description') {
-        return compareString(a.description ?? '', b.description ?? '') * mul;
-      }
-
-      // type
-      return compareString(a.expenseType, b.expenseType) * mul;
-    });
-
-    return list;
-  });
-
-  tableFilteredBalance = computed(() =>
-    this.filteredTransactions().reduce((sum, t) => {
-      const amount = Number(t.amount);
-      return t.expenseType === 'Income' ? sum + amount : sum - amount;
-    }, 0)
-  );
-
-  tableSortIcon(field: 'date' | 'category' | 'description' | 'type' | 'amount'): string {
-    if (this.tableSortField() !== field) return 'unfold_more';
-    return this.tableSortDir() === 'asc' ? 'arrow_upward' : 'arrow_downward';
-  }
-
-  toggleTableSort(field: 'date' | 'category' | 'description' | 'type' | 'amount') {
-    if (this.tableSortField() !== field) {
-      this.tableSortField.set(field);
-      this.tableSortDir.set('asc');
-      return;
+    if (action === 'edit') {
+      this.openEditDialog(row);
+    } else if (action === 'delete') {
+      this.deleteTransaction(row.id);
     }
-    this.tableSortDir.set(this.tableSortDir() === 'asc' ? 'desc' : 'asc');
-  }
-
-  clearTableFilterDate() {
-    this.tableFilterDate.set('');
-  }
-
-  clearTableFilterCategory() {
-    this.tableFilterCategory.set('');
-  }
-
-  clearTableFilterDescription() {
-    this.tableFilterDescription.set('');
-  }
-
-  clearTableFilterType() {
-    this.tableFilterType.set('All');
-  }
-
-  clearTableFilterAmountMin() {
-    this.tableFilterAmountMin.set('');
-  }
-
-  clearTableFilterAmountMax() {
-    this.tableFilterAmountMax.set('');
-  }
-
-  clearTableFilters() {
-    this.tableFilterDate.set('');
-    this.tableFilterCategory.set('');
-    this.tableFilterDescription.set('');
-    this.tableFilterType.set('All');
-    this.tableFilterAmountMin.set('');
-    this.tableFilterAmountMax.set('');
-  }
-
-  formatDayNumeric(value: unknown): string {
-    return this.italianNumericDateFormatter.format(this.toLocalDate(value));
-  }
-
-  categoryName(categoryId: number): string {
-    const match = this.categories().find(c => c.id === categoryId);
-    return match?.name ?? `#${categoryId}`;
   }
 
   openEditDialog(tx: TransactionResponseDto) {
@@ -269,9 +178,8 @@ export class ProxyTransactionsPage {
     });
   }
 
-  openCreateDialogForProxyTransaction() {
+  openCreateDialog() {
     const initialDate = this.toDayKey(this.today);
-    this.isProxyDialog = true;
     this.openDialog({
       categories: this.categories(),
       initialDate,
@@ -294,12 +202,10 @@ export class ProxyTransactionsPage {
       if (result.mode === 'create') {
         this.transactionsService.createTransaction(result.request).subscribe({
           next: () => {
-            this.isProxyDialog = false;
             this.loadTransactions();
             this.loading.set(false);
           },
           error: () => {
-            this.isProxyDialog = false;
             this.loading.set(false);
           }
         });
@@ -308,12 +214,10 @@ export class ProxyTransactionsPage {
 
       this.transactionsService.updateTransaction(result.id, result.request).subscribe({
         next: () => {
-          this.isProxyDialog = false;
           this.loadTransactions();
           this.loading.set(false);
         },
         error: () => {
-          this.isProxyDialog = false;
           this.loading.set(false);
         }
       });
@@ -345,7 +249,8 @@ export class ProxyTransactionsPage {
     return new Date();
   }
 
-  private normalize(value: unknown): string {
-    return String(value ?? '').trim().toLowerCase();
+  categoryName(categoryId: number): string {
+    const match = this.categories().find(c => c.id === categoryId);
+    return match?.name ?? `#${categoryId}`;
   }
 }
