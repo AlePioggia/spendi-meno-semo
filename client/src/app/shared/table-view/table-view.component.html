@@ -1,7 +1,6 @@
 <div class="table-wrap">
   <table class="data-table">
     <thead>
-      <!-- Headers con ordinamento -->
       <tr>
         <th *ngFor="let col of columns" [ngClass]="col.className">
           <button
@@ -19,12 +18,9 @@
         <th class="col-actions" *ngIf="config.showActions"></th>
       </tr>
 
-      <!-- Filtri -->
       <tr class="filters" *ngIf="config.filterable !== false">
-        <!-- Filtri per colonna in base al tipo -->
         <th *ngFor="let col of columns" [ngClass]="col.className">
           <div class="filter-wrap">
-            <!-- STRING: Ricerca testo -->
             <input
               *ngIf="col.type === 'string'"
               type="text"
@@ -35,7 +31,6 @@
               [attr.aria-label]="'Filtra per ' + col.label"
             />
 
-            <!-- DATE: Input data -->
             <input
               *ngIf="col.type === 'date'"
               type="date"
@@ -45,7 +40,6 @@
               [attr.aria-label]="'Filtra per ' + col.label"
             />
 
-            <!-- ENUM: Select dropdown -->
             <select
               *ngIf="col.type === 'enum'"
               class="filter"
@@ -59,7 +53,6 @@
               </option>
             </select>
 
-            <!-- NUMBER: Min/Max con layout inline -->
             <ng-container *ngIf="col.type === 'number'">
               <input
                 type="number"
@@ -81,7 +74,6 @@
               />
             </ng-container>
 
-            <!-- Bottone pulisci filtro -->
             <button
               *ngIf="isFilterActive(asString(col.key))"
               mat-icon-button
@@ -112,7 +104,6 @@
     </thead>
 
     <tbody>
-      <!-- Righe dati -->
       <tr *ngIf="filteredData().length === 0" class="no-results">
         <td [attr.colspan]="columns.length + (config.showActions ? 1 : 0)">Nessun risultato con i filtri correnti.</td>
       </tr>
@@ -147,7 +138,6 @@
       </tr>
     </tbody>
 
-    <!-- Footer con somma/bilancio -->
     <tfoot *ngIf="config.summaryField">
       <tr class="totals">
         <td [attr.colspan]="columns.length - 1">Totale (filtrato)</td>

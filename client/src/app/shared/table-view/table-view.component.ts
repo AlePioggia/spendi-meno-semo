@@ -38,7 +38,6 @@ export class TableViewComponent<T = any> implements OnInit {
   }
 
   ngOnInit() {
-    // Inizializza i filtri basati sulla configurazione
     this.initializeFilters();
   }
 
@@ -51,7 +50,6 @@ export class TableViewComponent<T = any> implements OnInit {
     this.filters.set(newFilters);
   }
 
-  /** Dati filtrati e ordinati */
   filteredData = computed(() => {
     const filterMap = this.filters();
     const cols = this.config?.columns ?? [];
@@ -65,7 +63,6 @@ export class TableViewComponent<T = any> implements OnInit {
         if (col.type === 'string') {
           const normalizedFilter = String(filter ?? '').toLowerCase().trim();
           if (!normalizedFilter) return true;
-          // Usa il valore formattato se disponibile, altrimenti usa il valore raw
           const displayValue = this.formatValue(col, value);
           return displayValue.toLowerCase().includes(normalizedFilter);
         }
@@ -92,7 +89,6 @@ export class TableViewComponent<T = any> implements OnInit {
         if (col.type === 'date') {
           const normalizedFilter = String(filter ?? '').toLowerCase().trim();
           if (!normalizedFilter) return true;
-          // Converti la data a formato YYYY-MM-DD per il confronto (come il date picker)
           const dateStr = this.getDateISOString(value);
           return dateStr.includes(normalizedFilter);
         }
@@ -207,43 +203,35 @@ export class TableViewComponent<T = any> implements OnInit {
     return this.config.showActions ?? false;
   }
 
-  /** Espone String per usage nel template */
   asString(value: any): string {
     return String(value);
   }
 
-  /** Ottiene il label di un valore enum */
   getEnumLabel(column: TableColumnConfig<T>, value: any): string {
     if (!column.enumMap) return String(value ?? '');
     return column.enumMap[value] ?? String(value ?? '');
   }
 
-  /** Lista voci enum come array di oggetti */
   getEnumOptions(enumMap?: Record<string, string>): Array<{ key: string; label: string }> {
     if (!enumMap) return [];
     return Object.entries(enumMap).map(([key, label]) => ({ key, label }));
   }
 
-  /** Estrae e formatta il valore di una cella */
   formatRowValue(row: T, col: TableColumnConfig<T>): string {
     const value = (row as any)[col.key];
     return this.formatValue(col, value);
   }
 
-  /** Ritorna le classi da applicare alla cella (incluse classi dinamiche) */
   getCellClasses(row: T, col: TableColumnConfig<T>): Record<string, boolean> {
     const classes: Record<string, boolean> = {};
     
-    // Aggiungi classe statica se definita
     if (col.cellClassName) {
       classes[col.cellClassName] = true;
     }
 
-    // Aggiungi classi dinamiche basate sulla colonna e sui dati
     const value = (row as any)[col.key];
     const rowData = row as any;
 
-    // Per colonne di tipo amount, aggiungi classe income/expense
     if (col.type === 'number' && col.key === 'amount') {
       const expenseType = rowData['expenseType'];
       if (expenseType === 'Income') {
@@ -275,7 +263,7 @@ export class TableViewComponent<T = any> implements OnInit {
   private getDateISOString(value: any): string {
     if (!value) return '';
     const date = new Date(value);
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    return date.toISOString().split('T')[0];
   }
 
   onRowAction(action: string, row: T) {
