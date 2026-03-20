@@ -52,7 +52,9 @@ namespace Expenses.Application.Tests.queries.transactions
                 .ReturnsAsync(transactions);
 
             cacheServiceMock
-                .Setup(c => c.GetOrCreate(It.IsAny<Func<CancellationToken, Task<List<Transaction>>>>()));
+                .Setup(c => c.GetOrCreate(It.IsAny<Func<CancellationToken, Task<List<Transaction>>>>()))
+                .ReturnsAsync(transactions)
+                ;
 
             var handler = new GetTransactionsHandler(repositoryMock.Object, cacheServiceMock.Object);
 
