@@ -1,5 +1,6 @@
 using Expenses.Application.commands.recurringTransactions;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Moq;
 
@@ -12,6 +13,7 @@ namespace Expenses.Application.Tests.commands.recurringTransactions
         {
             var recurring = new RecurringOperation { Id = 1 };
             var repositoryMock = new Mock<IRepository<RecurringOperation, long>>();
+            var cacheServiceMock = new Mock<ICacheService<RecurringOperation>>();
 
             repositoryMock
                 .Setup(r => r.GetByIdAsync(It.IsAny<long>()))
@@ -22,7 +24,7 @@ namespace Expenses.Application.Tests.commands.recurringTransactions
                 .Callback<RecurringOperation>(ro => ro.Status = 1)
                 .Returns(Task.CompletedTask);
 
-            var handler = new DeleteRecurringTransactionHandler(repositoryMock.Object);
+            var handler = new DeleteRecurringTransactionHandler(repositoryMock.Object, cacheServiceMock.Object);
 
             await handler.Handle(new DeleteRecurringTransactionCommand(1), CancellationToken.None);
 

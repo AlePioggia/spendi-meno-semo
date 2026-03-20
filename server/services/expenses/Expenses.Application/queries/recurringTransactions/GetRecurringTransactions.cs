@@ -10,9 +10,9 @@ namespace Expenses.Application.queries.recurringTransactions
     public class GetRecurringTransactionsHandler : IRequestHandler<GetRecurringTransactionsQuery, List<RecurringOperation>?>
     {
         private readonly IRepository<RecurringOperation, long> _repository;
-        private readonly ICacheService<RecurringOperation> _cacheService;
+        private readonly ICacheService<List<RecurringOperation>> _cacheService;
 
-        public GetRecurringTransactionsHandler(IRepository<RecurringOperation, long> repository, ICacheService<RecurringOperation> cacheService)
+        public GetRecurringTransactionsHandler(IRepository<RecurringOperation, long> repository, ICacheService<List<RecurringOperation>> cacheService)
         {
             _repository = repository;
             _cacheService = cacheService;

@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.commands.categories;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Moq;
 using System;
@@ -15,6 +16,7 @@ namespace Expenses.Application.Tests.commands.category
         {
             var category = new Category { Id = 1 };
             var repositoryMock = new Mock<IRepository<Category, long>>();
+            var cacheServiceMock = new Mock<ICacheService<Category>>();
             repositoryMock
                 .Setup(r => r.GetByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(category);
@@ -24,7 +26,7 @@ namespace Expenses.Application.Tests.commands.category
                 .Callback<Category>(c => c.Status = 1)
                 .Returns(Task.CompletedTask);
 
-            var handler = new DeleteCategoryHandler(repositoryMock.Object);
+            var handler = new DeleteCategoryHandler(repositoryMock.Object, cacheServiceMock.Object);
             var command = new DeleteCategoryCommand(
                 1
             );

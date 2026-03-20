@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.queries.transactions;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Moq;
@@ -15,6 +16,7 @@ namespace Expenses.Application.Tests.queries.transactions
         public async Task Handle_ShouldCorrectlyReturnTransactionsWgenExist()
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
+            var cacheServiceMock = new Mock<ICacheService<List<Transaction>>>();
             long firstId = 1;
             long secondId = 2;
 
@@ -49,7 +51,7 @@ namespace Expenses.Application.Tests.queries.transactions
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(transactions);
 
-            var handler = new GetTransactionsHandler(repositoryMock.Object);
+            var handler = new GetTransactionsHandler(repositoryMock.Object, cacheServiceMock.Object);
 
             var command = new GetTransactionsQuery();
 
@@ -65,6 +67,7 @@ namespace Expenses.Application.Tests.queries.transactions
         public async Task Handle_ShouldCorrectlyReturnEmptyTransactionListWhenEmpty()
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
+            var cacheServiceMock = new Mock<ICacheService<List<Transaction>>>();
 
             List<Transaction> transactions = new List<Transaction>();
 
@@ -72,7 +75,7 @@ namespace Expenses.Application.Tests.queries.transactions
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(transactions);
 
-            var handler = new GetTransactionsHandler(repositoryMock.Object);
+            var handler = new GetTransactionsHandler(repositoryMock.Object, cacheServiceMock.Object);
 
             var command = new GetTransactionsQuery();
 
