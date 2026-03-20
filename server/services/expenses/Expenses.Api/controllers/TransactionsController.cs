@@ -45,7 +45,8 @@ namespace Expenses.Api.controllers
                         tx.ExpenseType.ToString(),
                         tx.CategoryId,
                         tx.Date,
-                        tx.CreatedAt
+                        tx.CreatedAt,
+                        tx.IsProxyTransaction
                     )).ToList();
 
                 return Ok(mappedTransactions);
@@ -83,7 +84,8 @@ namespace Expenses.Api.controllers
                     transaction.ExpenseType.ToString(),
                     transaction.CategoryId,
                     transaction.Date,
-                    transaction.CreatedAt
+                    transaction.CreatedAt,
+                    transaction.IsProxyTransaction
                 );
                 return Ok(mappedTransaction);
             } catch (ValidationException ex)

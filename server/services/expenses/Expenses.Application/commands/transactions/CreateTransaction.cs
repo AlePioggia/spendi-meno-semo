@@ -14,7 +14,8 @@ namespace Expenses.Application.commands.transactions
         Currency Currency,
         TransactionType ExpenseType,
         long CategoryId,
-        DateTime Date
+        DateTime Date,
+        bool isProxyTransaction = false
     ) : IRequest;
 
     public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand>
@@ -43,6 +44,7 @@ namespace Expenses.Application.commands.transactions
                 TenantId = _executionContext.TenantId,
                 CategoryId = command.CategoryId,
                 Date = command.Date,
+                IsProxyTransaction = command.isProxyTransaction,
                 CreatedAt = DateTime.UtcNow
             };
 

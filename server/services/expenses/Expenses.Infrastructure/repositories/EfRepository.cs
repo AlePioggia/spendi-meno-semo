@@ -37,6 +37,11 @@ namespace Expenses.Infrastructure.repositories
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<List<TEntity>> GetAllWithPredicate(Predicate<TEntity> predicate)
+        {
+            return await _dbSet.Where(e => predicate(e)).ToListAsync();
+        }
+
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {
             var parameter = Expression.Parameter(typeof(TEntity), "e");

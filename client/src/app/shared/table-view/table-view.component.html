@@ -1,0 +1,151 @@
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns" [ngClass]="col.className">
+          <button
+            *ngIf="config.sortable !== false"
+            type="button"
+            class="sort-btn"
+            (click)="toggleSort(asString(col.key))"
+            [attr.aria-label]="'Ordina per ' + col.label"
+          >
+            <span>{{ col.label }}</span>
+            <mat-icon>{{ getSortIcon(asString(col.key)) }}</mat-icon>
+          </button>
+          <span *ngIf="config.sortable === false">{{ col.label }}</span>
+        </th>
+        <th class="col-actions" *ngIf="config.showActions"></th>
+      </tr>
+
+      <tr class="filters" *ngIf="config.filterable !== false">
+        <th *ngFor="let col of columns" [ngClass]="col.className">
+          <div class="filter-wrap">
+            <input
+              *ngIf="col.type === 'string'"
+              type="text"
+              class="filter"
+              [value]="getFilterValue(asString(col.key)) || ''"
+              (input)="setFilter(asString(col.key), $any($event.target).value)"
+              [placeholder]="'Cerca ' + col.label"
+              [attr.aria-label]="'Filtra per ' + col.label"
+            />
+
+            <input
+              *ngIf="col.type === 'date'"
+              type="date"
+              class="filter"
+              [value]="getFilterValue(asString(col.key)) || ''"
+              (input)="setFilter(asString(col.key), $any($event.target).value)"
+              [attr.aria-label]="'Filtra per ' + col.label"
+            />
+
+            <select
+              *ngIf="col.type === 'enum'"
+              class="filter"
+              [value]="getFilterValue(asString(col.key)) || 'All'"
+              (change)="setFilter(asString(col.key), $any($event.target).value)"
+              [attr.aria-label]="'Filtra per ' + col.label"
+            >
+              <option value="All">Tutti</option>
+              <option *ngFor="let opt of getEnumOptions(col.enumMap)" [value]="opt.key">
+                {{ opt.label }}
+              </option>
+            </select>
+
+            <ng-container *ngIf="col.type === 'number'">
+              <input
+                type="number"
+                class="filter number-filter"
+                inputmode="decimal"
+                [value]="getFilterValue(asString(col.key))?.min || ''"
+                (input)="setFilter(asString(col.key), { min: $any($event.target).value })"
+                placeholder="Min"
+                [attr.aria-label]="'Importo minimo per ' + col.label"
+              />
+              <input
+                type="number"
+                class="filter number-filter"
+                inputmode="decimal"
+                [value]="getFilterValue(asString(col.key))?.max || ''"
+                (input)="setFilter(asString(col.key), { max: $any($event.target).value })"
+                placeholder="Max"
+                [attr.aria-label]="'Importo massimo per ' + col.label"
+              />
+            </ng-container>
+
+            <button
+              *ngIf="isFilterActive(asString(col.key))"
+              mat-icon-button
+              type="button"
+              class="clear-filter"
+              (click)="clearFilter(asString(col.key))"
+              [attr.aria-label]="'Pulisci filtro ' + col.label"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </th>
+        <th class="col-actions-filter">
+          <button
+            *ngIf="hasFiltersApplied()"
+            mat-icon-button
+            type="button"
+            (click)="clearAllFilters()"
+            aria-label="Pulisci tutti i filtri"
+            matTooltip="Pulisci tutti i filtri"
+            matTooltipPosition="left"
+            matTooltipShowDelay="250"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngIf="filteredData().length === 0" class="no-results">
+        <td [attr.colspan]="columns.length + (config.showActions ? 1 : 0)">Nessun risultato con i filtri correnti.</td>
+      </tr>
+
+    <tr *ngFor="let row of filteredData()" class="data-row" (dblclick)="onRowDoubleClick(row)">
+    <td *ngFor="let col of columns">
+        <span [ngClass]="getCellClasses(row, col)">
+        {{ formatRowValue(row, col) }}
+        </span>
+    </td>
+    <td class="actions-cell" *ngIf="config.showActions">
+          <button
+            mat-icon-button
+            (click)="onRowAction('edit', row)"
+            aria-label="Modifica"
+            matTooltip="Modifica"
+            matTooltipPosition="left"
+            matTooltipShowDelay="250"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="onRowAction('delete', row)"
+            aria-label="Elimina"
+            matTooltip="Elimina"
+            matTooltipPosition="left"
+            matTooltipShowDelay="250"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+
+    <tfoot *ngIf="config.summaryField">
+      <tr class="totals">
+        <td [attr.colspan]="columns.length - 1">Totale (filtrato)</td>
+        <td>{{ summary() | number:'1.2-2' }}</td>
+        <td *ngIf="config.showActions"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>

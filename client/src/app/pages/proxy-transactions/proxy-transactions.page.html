@@ -1,0 +1,35 @@
+<div class="transactions-container">
+  <mat-card class="transactions-card">
+    <div class="card-header">
+      <div class="title">
+        <h2>Spese Previste</h2>
+        <div class="subtitle">Transazioni future pianificate</div>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-fab
+          color="primary"
+          class="add-button"
+          (click)="openCreateDialog()"
+          aria-label="Aggiungi spesa prevista"
+          matTooltip="Nuova spesa prevista"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-progress-spinner *ngIf="loading()" mode="indeterminate" diameter="40" class="spinner"></mat-progress-spinner>
+
+    <app-table-view
+      *ngIf="!loading()"
+      [data]="proxyTransactions()"
+      [config]="tableConfig"
+      (rowAction)="onTableRowAction($event)"
+    >
+    </app-table-view>
+  </mat-card>
+</div>
