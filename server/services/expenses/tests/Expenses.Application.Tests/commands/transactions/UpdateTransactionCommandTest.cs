@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.commands.transactions;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
@@ -17,6 +18,7 @@ namespace Expenses.Application.Tests.commands.transactions
         public async Task Handle_ShouldUpdateATransactionCorrectly()
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
+            var cacheServiceMock = new Mock<ICacheService<Transaction>>();
 
             repositoryMock
                 .Setup(r => r.GetByIdAsync(1))
@@ -26,7 +28,7 @@ namespace Expenses.Application.Tests.commands.transactions
                 .Setup(r => r.UpdateAsync(It.IsAny<Transaction>()))
                 .Returns(Task.CompletedTask);
 
-            var handler = new UpdateTransactionHandler(repositoryMock.Object);
+            var handler = new UpdateTransactionHandler(repositoryMock.Object, cacheServiceMock.Object);
 
             var command = new UpdateTransactionCommand(
                 1,

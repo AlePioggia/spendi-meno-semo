@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.commands.transactions;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Moq;
 using System;
@@ -15,6 +16,7 @@ namespace Expenses.Application.Tests.commands.transactions
         {
             var transaction = new Transaction { Id = 1};
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
+            var cacheServiceMock = new Mock<ICacheService<Transaction>>();
             repositoryMock
                 .Setup(r => r.GetByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(transaction);
@@ -24,7 +26,7 @@ namespace Expenses.Application.Tests.commands.transactions
                 .Callback<Transaction>(t => t.Status = 1) 
                 .Returns(Task.CompletedTask);
 
-            var handler = new DeleteTransactionHandler(repositoryMock.Object);
+            var handler = new DeleteTransactionHandler(repositoryMock.Object, cacheServiceMock.Object);
             var command = new DeleteTransactionCommand(
                 1
             );
