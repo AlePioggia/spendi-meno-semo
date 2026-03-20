@@ -1,15 +1,17 @@
 ﻿using Expenses.Application.repositories;
-using Microsoft.Extensions.DependencyInjection;
+using Expenses.Application.services;
+using Expenses.Domain.Entities;
+using Expenses.Infrastructure.persistence;
+using Expenses.Infrastructure.repositories;
+using Expenses.Infrastructure.scheduled;
+using Expenses.Infrastructure.services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Expenses.Infrastructure.repositories;
-using Expenses.Infrastructure.persistence;
-using Expenses.Domain.Entities;
-using Expenses.Infrastructure.scheduled;
 
 namespace Expenses.Infrastructure
 {
@@ -27,6 +29,7 @@ namespace Expenses.Infrastructure
             services.AddScoped<RecurringOperationRepository>();
             services.AddScoped<IRepository<RecurringOperation, long>, RecurringOperationRepository>();
             services.AddScoped<RecurringTransactionsJobRunner>();
+            services.AddScoped(typeof(ICacheService<>), typeof(CacheService<>));
 
             return services;
         }
@@ -42,6 +45,7 @@ namespace Expenses.Infrastructure
             services.AddScoped<RecurringOperationRepository>();
             services.AddScoped<IRepository<RecurringOperation, long>, RecurringOperationRepository>();
             services.AddScoped<RecurringTransactionsJobRunner>();
+            services.AddScoped(typeof(ICacheService<>), typeof(CacheService<>));
 
             return services;
         }

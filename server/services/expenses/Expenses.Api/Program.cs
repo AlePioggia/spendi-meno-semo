@@ -21,6 +21,8 @@ DotNetEnv.Env.Load();
 
 bool isDevelopment = builder.Environment.IsDevelopment();
 
+builder.Services.AddHybridCache();
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.AddServerHeader = false;

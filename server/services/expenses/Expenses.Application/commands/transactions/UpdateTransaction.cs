@@ -1,4 +1,5 @@
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
@@ -21,10 +22,12 @@ namespace Expenses.Application.commands.transactions
     public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand>
     {
         private readonly IRepository<Transaction, long> _repository;
+        private readonly ICacheService<Transaction> _cacheService;
 
-        public UpdateTransactionHandler(IRepository<Transaction, long> repository)
+        public UpdateTransactionHandler(IRepository<Transaction, long> repository, ICacheService<Transaction> cacheService)
         {
             _repository = repository;
+            _cacheService = cacheService;
         }
 
         public async Task Handle(UpdateTransactionCommand command, CancellationToken cancellationToken)
@@ -45,6 +48,7 @@ namespace Expenses.Application.commands.transactions
             transaction.IsProxyTransaction = command.isProxyTransaction;
 
             await _repository.UpdateAsync(transaction);
+            await _cacheService.Invalidate();
         }
     }
 

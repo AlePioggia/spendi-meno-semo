@@ -1,5 +1,6 @@
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -16,13 +17,16 @@ namespace Expenses.Application.commands.categories
     {
         private readonly IRepository<Category, long> _repository;
         private readonly IExecutionContext _executionContext;
+        private readonly ICacheService<Category> _cacheService;
 
         public CreateCategoryHandler(
             IRepository<Category, long> repository,
-            IExecutionContext executionContext)
+            IExecutionContext executionContext,
+            ICacheService<Category> cacheService)
         {
             _repository = repository;
             _executionContext = executionContext;
+            _cacheService = cacheService;
         }
 
         public async Task Handle(CreateCategoryCommand command, CancellationToken ct)
@@ -38,6 +42,7 @@ namespace Expenses.Application.commands.categories
             };
 
             await _repository.AddAsync(category);
+            await _cacheService.Invalidate();
         }
     }
 

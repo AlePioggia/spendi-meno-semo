@@ -1,4 +1,5 @@
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -10,10 +11,12 @@ namespace Expenses.Application.commands.transactions
     public class DeleteTransactionHandler : IRequestHandler<DeleteTransactionCommand>
     {
         private readonly IRepository<Transaction, long> _repository;
+        private readonly ICacheService<Transaction> _cacheService;
 
-        public DeleteTransactionHandler(IRepository<Transaction, long> repository)
+        public DeleteTransactionHandler(IRepository<Transaction, long> repository, ICacheService<Transaction> cacheService)
         {
             _repository = repository;
+            _cacheService = cacheService;
         }
 
         public async Task Handle(DeleteTransactionCommand command, CancellationToken ct)
@@ -25,6 +28,7 @@ namespace Expenses.Application.commands.transactions
             }
             transaction.Delete();
             await _repository.UpdateAsync(transaction);
+            await _cacheService.Invalidate();
         }
     }
 

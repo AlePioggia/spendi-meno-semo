@@ -1,5 +1,6 @@
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
@@ -26,13 +27,16 @@ namespace Expenses.Application.commands.recurringTransactions
     {
         private readonly IRepository<RecurringOperation, long> _repository;
         private readonly IExecutionContext _executionContext;
+        private readonly ICacheService<RecurringOperation> _cacheService;
 
         public UpdateRecurringTransactionHandler(
             IRepository<RecurringOperation, long> repository,
-            IExecutionContext executionContext)
+            IExecutionContext executionContext,
+            ICacheService<RecurringOperation> cacheService)
         {
             _repository = repository;
             _executionContext = executionContext;
+            _cacheService = cacheService;
         }
 
         public async Task Handle(UpdateRecurringTransactionCommand command, CancellationToken ct)
@@ -69,6 +73,7 @@ namespace Expenses.Application.commands.recurringTransactions
             recurringOperation.Template.TenantId = recurringOperation.TenantId;
 
             await _repository.UpdateAsync(recurringOperation);
+            await _cacheService.Invalidate();
         }
     }
 
