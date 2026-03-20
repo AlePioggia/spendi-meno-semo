@@ -20,7 +20,7 @@ namespace Expenses.Application.queries.categories
 
         public async Task<List<Category>?> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
-            return await _cacheService.GetOrCreate(async (x) => await _repository.GetAllAsync());
+            return await _cacheService.GetOrCreate(async (x) => await _repository.GetAllAsync()) ?? new List<Category>();
         }
     }
 }

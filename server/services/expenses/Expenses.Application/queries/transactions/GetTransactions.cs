@@ -20,7 +20,7 @@ namespace Expenses.Application.queries.transactions
 
         public async Task<List<Transaction>?> Handle(GetTransactionsQuery query, CancellationToken none)
         {
-            return await _cacheService.GetOrCreate(async (x) => await _repository.GetAllAsync());
+            return await _cacheService.GetOrCreate(async (x) => await _repository.GetAllAsync()) ?? new List<Transaction>();
         }
     }
 }

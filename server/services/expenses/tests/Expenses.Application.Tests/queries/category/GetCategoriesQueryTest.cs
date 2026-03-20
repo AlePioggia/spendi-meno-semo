@@ -40,6 +40,11 @@ namespace Expenses.Application.Tests.queries.category
             repositoryMock
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(categories);
+
+            cacheServiceMock
+                .Setup(c => c.GetOrCreate(It.IsAny<Func<CancellationToken, Task<List<Category>>>>()))
+                .ReturnsAsync(categories);
+
             var handler = new GetCategoriesHandler(repositoryMock.Object, cacheServiceMock.Object);
             var command = new GetCategoriesQuery();
             List<Category>? result = await handler.Handle(command, CancellationToken.None);

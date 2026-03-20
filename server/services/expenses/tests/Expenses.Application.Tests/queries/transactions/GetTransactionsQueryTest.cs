@@ -13,7 +13,7 @@ namespace Expenses.Application.Tests.queries.transactions
     public class GetTransactionsQueryTest
     {
         [Fact]
-        public async Task Handle_ShouldCorrectlyReturnTransactionsWgenExist()
+        public async Task Handle_ShouldCorrectlyReturnTransactionsWhenExist()
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
             var cacheServiceMock = new Mock<ICacheService<List<Transaction>>>();
@@ -51,6 +51,9 @@ namespace Expenses.Application.Tests.queries.transactions
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(transactions);
 
+            cacheServiceMock
+                .Setup(c => c.GetOrCreate(It.IsAny<Func<CancellationToken, Task<List<Transaction>>>>()));
+
             var handler = new GetTransactionsHandler(repositoryMock.Object, cacheServiceMock.Object);
 
             var command = new GetTransactionsQuery();
@@ -73,6 +76,10 @@ namespace Expenses.Application.Tests.queries.transactions
 
             repositoryMock
                 .Setup(r => r.GetAllAsync())
+                .ReturnsAsync(transactions);
+
+            cacheServiceMock
+                .Setup(c => c.GetOrCreate(It.IsAny<Func<CancellationToken, Task<List<Transaction>>>>()))
                 .ReturnsAsync(transactions);
 
             var handler = new GetTransactionsHandler(repositoryMock.Object, cacheServiceMock.Object);
