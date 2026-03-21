@@ -1,6 +1,7 @@
 ﻿using Expenses.Application.commands.transactions;
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
@@ -16,6 +17,7 @@ namespace Expenses.Application.Tests.commands.transactions
         {
             var repositoryMock = new Mock<IRepository<Transaction, long>>();
             var executionContextMock = new Mock<IExecutionContext>();
+            var cacheServiceMock = new Mock<ICacheService<Transaction>>();  
             executionContextMock.SetupGet(x => x.UserId).Returns("");
             executionContextMock.SetupGet(x => x.TenantId).Returns(1);
             long fakeId = 1;
@@ -25,7 +27,7 @@ namespace Expenses.Application.Tests.commands.transactions
                 .Callback<Transaction>(t => t.Id = fakeId)
                 .Returns(Task.CompletedTask);
 
-            var handler = new CreateTransactionHandler(repositoryMock.Object, executionContextMock.Object);
+            var handler = new CreateTransactionHandler(repositoryMock.Object, executionContextMock.Object, cacheServiceMock.Object);
 
             var command = new CreateTransactionCommand(
                     "fake transaction",

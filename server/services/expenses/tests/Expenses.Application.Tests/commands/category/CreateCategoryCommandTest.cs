@@ -1,6 +1,7 @@
 ﻿using Expenses.Application.commands.categories;
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Moq;
 using System;
@@ -17,6 +18,7 @@ namespace Expenses.Application.Tests.commands.category
         {
             var repositoryMock = new Mock<IRepository<Category, long>>();
             var executionContextMock = new Mock<IExecutionContext>();
+            var cacheServiceMock = new Mock<ICacheService<Category>>();
             executionContextMock.SetupGet(x => x.UserId).Returns("");
             executionContextMock.SetupGet(x => x.TenantId).Returns(1);
 
@@ -31,7 +33,7 @@ namespace Expenses.Application.Tests.commands.category
                 DateTime.UtcNow
             );
 
-            var handler = new CreateCategoryHandler(repositoryMock.Object, executionContextMock.Object);
+            var handler = new CreateCategoryHandler(repositoryMock.Object, executionContextMock.Object, cacheServiceMock.Object);
 
             await handler.Handle(command, CancellationToken.None);
 

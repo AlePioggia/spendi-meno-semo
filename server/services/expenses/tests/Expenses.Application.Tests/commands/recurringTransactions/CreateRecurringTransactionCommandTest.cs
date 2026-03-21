@@ -1,6 +1,7 @@
 ﻿using Expenses.Application.commands.recurringTransactions;
 using Expenses.Application.contexts;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Entities.enums;
 using Expenses.Domain.ValueObjects;
@@ -19,6 +20,7 @@ namespace Expenses.Application.Tests.commands.recurringTransactions
         {
             var repositoryMock = new Mock<IRepository<RecurringOperation, long>>();
             var executionContextMock = new Mock<IExecutionContext>();
+            var cacheServiceMock = new Mock<ICacheService<RecurringOperation>>();
             executionContextMock.SetupGet(x => x.UserId).Returns("");
             executionContextMock.SetupGet(x => x.TenantId).Returns(1);
 
@@ -45,7 +47,8 @@ namespace Expenses.Application.Tests.commands.recurringTransactions
 
             var handler = new CreateRecurringTransactionCommandHandler(
                 repositoryMock.Object,
-                executionContextMock.Object
+                executionContextMock.Object,
+                cacheServiceMock.Object
             );
 
             await handler.Handle(command, CancellationToken.None);

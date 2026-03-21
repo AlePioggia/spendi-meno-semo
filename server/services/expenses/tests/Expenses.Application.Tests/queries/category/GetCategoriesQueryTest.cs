@@ -1,5 +1,6 @@
 ﻿using Expenses.Application.queries.categories;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Moq;
 using System;
@@ -14,6 +15,7 @@ namespace Expenses.Application.Tests.queries.category
         public async Task Handle_ShouldReturnCategoriesWhenTheyExist()
         {
             var repositoryMock = new Mock<IRepository<Category, long>>();
+            var cacheServiceMock = new Mock<ICacheService<List<Category>>>();
             long firstId = 1;
             long secondId = 2;
             List<Category> categories = new List<Category>();
@@ -38,7 +40,12 @@ namespace Expenses.Application.Tests.queries.category
             repositoryMock
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(categories);
-            var handler = new GetCategoriesHandler(repositoryMock.Object);
+
+            cacheServiceMock
+                .Setup(c => c.GetOrCreate(It.IsAny<Func<CancellationToken, Task<List<Category>>>>()))
+                .ReturnsAsync(categories);
+
+            var handler = new GetCategoriesHandler(repositoryMock.Object, cacheServiceMock.Object);
             var command = new GetCategoriesQuery();
             List<Category>? result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);
@@ -50,11 +57,12 @@ namespace Expenses.Application.Tests.queries.category
         public async Task Handle_ShouldReturnEmptyListWhenNoCategoriesExist()
         {
             var repositoryMock = new Mock<IRepository<Category, long>>();
+            var cacheServiceMock = new Mock<ICacheService<List<Category>>>();
             List<Category> categories = new List<Category>();
             repositoryMock
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(categories);
-            var handler = new GetCategoriesHandler(repositoryMock.Object);
+            var handler = new GetCategoriesHandler(repositoryMock.Object, cacheServiceMock.Object);
             var command = new GetCategoriesQuery();
             List<Category>? result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);

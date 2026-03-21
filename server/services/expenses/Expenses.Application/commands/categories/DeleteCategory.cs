@@ -1,4 +1,5 @@
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -10,10 +11,12 @@ namespace Expenses.Application.commands.categories
     public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
     {
         private readonly IRepository<Category, long> _repository;
+        private readonly ICacheService<Category> _cacheService;
 
-        public DeleteCategoryHandler(IRepository<Category, long> repository)
+        public DeleteCategoryHandler(IRepository<Category, long> repository, ICacheService<Category> cacheService)
         {
             _repository = repository;
+            _cacheService = cacheService;
         }
 
         public async Task Handle(DeleteCategoryCommand command, CancellationToken ct)
@@ -25,6 +28,7 @@ namespace Expenses.Application.commands.categories
             }
             entity.Delete();
             await _repository.UpdateAsync(entity);
+            await _cacheService.Invalidate();
         }
     }
 

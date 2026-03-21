@@ -1,4 +1,5 @@
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using MediatR;
 
@@ -9,15 +10,17 @@ namespace Expenses.Application.queries.categories
     public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, List<Category>?>
     {
         private readonly IRepository<Category, long> _repository;
+        private readonly ICacheService<List<Category>> _cacheService;
 
-        public GetCategoriesHandler(IRepository<Category, long> repository)
+        public GetCategoriesHandler(IRepository<Category, long> repository, ICacheService<List<Category>> cacheService)
         {
             _repository = repository;
+            _cacheService = cacheService;
         }
 
         public async Task<List<Category>?> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetAllAsync();
+            return await _cacheService.GetOrCreate(async (x) => await _repository.GetAllAsync()) ?? new List<Category>();
         }
     }
 }

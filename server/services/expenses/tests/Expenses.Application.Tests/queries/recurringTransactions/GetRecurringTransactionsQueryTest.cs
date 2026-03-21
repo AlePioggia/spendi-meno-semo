@@ -1,5 +1,6 @@
 using Expenses.Application.queries.recurringTransactions;
 using Expenses.Application.repositories;
+using Expenses.Application.services;
 using Expenses.Domain.Entities;
 using Moq;
 
@@ -11,12 +12,13 @@ namespace Expenses.Application.Tests.queries.recurringTransactions
         public async Task Handle_ShouldReturnAllRecurringTransactions()
         {
             var repositoryMock = new Mock<IRepository<RecurringOperation, long>>();
+            var cacheServiceMock = new Mock<ICacheService<List<RecurringOperation>>>();
 
             repositoryMock
                 .Setup(r => r.GetAllAsync())
                 .ReturnsAsync(new List<RecurringOperation> { new RecurringOperation { Id = 1 } });
 
-            var handler = new GetRecurringTransactionsHandler(repositoryMock.Object);
+            var handler = new GetRecurringTransactionsHandler(repositoryMock.Object, cacheServiceMock.Object);
 
             var result = await handler.Handle(new GetRecurringTransactionsQuery(), CancellationToken.None);
 
