@@ -32,8 +32,15 @@ namespace EventProcessor.Domain.Entities
         /// how to handle it
         /// </summary>
         public string? Payload { get; set; }
+        /// <summary>
+        /// Sets the date and time when the event was created
+        /// </summary>
         public DateTime CreatedAt { get; set; }
-        public required OperationType CommandType { get; set; }
-        public required ProcessingState ProcessingState { get; set; }
+        /// <summary>
+        /// sets the date and time when the message/event was received
+        /// </summary>
+        public DateTime EventReceivedAt { get; set; }
+        public OperationType? CommandType { get; set; }
+        public ProcessingState? ProcessingState { get; set; }
     }
 }
