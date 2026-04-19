@@ -8,6 +8,7 @@ namespace Expenses.Api.dto.request.transaction
         string? Currency,
         string? TransactionType,
         long CategoryId,
-        DateTime Date
+        DateTime Date,
+        bool IsProxyTransaction = false
     );
 }

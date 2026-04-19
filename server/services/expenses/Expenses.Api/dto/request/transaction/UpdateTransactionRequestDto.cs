@@ -7,6 +7,7 @@
         string TransactionType,
         string Currency,
         DateTime Date,
-        long CategoryId
+        long CategoryId,
+        bool IsProxyTransaction = false
     );
 }

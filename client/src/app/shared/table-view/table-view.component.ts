@@ -119,6 +119,10 @@ export class TableViewComponent<T = any> implements OnInit {
   summary = computed(() => {
     if (!this.config?.summaryField) return null;
 
+    if (this.config.summaryCalculator) {
+      return this.config.summaryCalculator(this.filteredData());
+    }
+
     const key = String(this.config.summaryField);
     const sum = this.filteredData().reduce((acc, row) => {
       const value = (row as any)[key];

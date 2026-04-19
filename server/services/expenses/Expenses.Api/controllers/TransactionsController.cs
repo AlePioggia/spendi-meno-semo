@@ -121,7 +121,8 @@ namespace Expenses.Api.controllers
                     currency,
                     expenseType,
                     request.CategoryId,
-                    request.Date
+                    request.Date,
+                    request.IsProxyTransaction
                 );
                 
                 await _mediator.Send(command);
@@ -162,7 +163,8 @@ namespace Expenses.Api.controllers
                     transactionType,
                     currency,
                     request.CategoryId,
-                    request.Date
+                    request.Date,
+                    request.IsProxyTransaction
                 );
 
                 await _mediator.Send(command);

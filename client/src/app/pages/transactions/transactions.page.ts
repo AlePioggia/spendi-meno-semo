@@ -150,7 +150,13 @@ export class TransactionsPage {
     sortable: true,
     filterable: true,
     showActions: true,
-    summaryField: 'amount' as const
+    summaryField: 'amount' as const,
+    summaryCalculator: (rows: TransactionResponseDto[]) => {
+      return rows.reduce((sum, t) => {
+        const amount = Number(t.amount);
+        return t.expenseType === 'Income' ? sum + amount : sum - amount;
+      }, 0);
+    }
   };
 
   constructor() {

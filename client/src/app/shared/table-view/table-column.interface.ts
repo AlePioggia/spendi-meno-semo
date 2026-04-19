@@ -24,6 +24,8 @@ export interface TableViewConfig<T = any> {
   keyField?: keyof T;
   /** Mostra soglia totale/bilancio per campi numerici */
   summaryField?: keyof T;
+  /** Funzione custom per calcolare il totale del summary field */
+  summaryCalculator?: (rows: T[]) => number;
   /** Icona per il pulsante azioni (default: 'more_vert') */
   actionsIcon?: string;
   /** Abilita ordinamento colonne (default: true) */
