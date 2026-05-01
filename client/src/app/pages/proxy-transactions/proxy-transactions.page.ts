@@ -169,7 +169,8 @@ export class ProxyTransactionsPage {
       categories: this.categories(),
       initialDate,
       mode: 'edit',
-      transaction: tx
+      transaction: tx,
+      isProxyTransaction: true
     });
   }
 
