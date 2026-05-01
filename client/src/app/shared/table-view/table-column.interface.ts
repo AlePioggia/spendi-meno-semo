@@ -15,6 +15,8 @@ export interface TableColumnConfig<T = any> {
   enumMap?: Record<string, string>;
   /** Classe CSS per l'elemento td */
   cellClassName?: string;
+  /** Custom buttons */
+  customBtns?: Array<{ action: string; label: string; tooltip: string, icon: string }>;
 }
 
 export interface TableViewConfig<T = any> {
@@ -34,4 +36,6 @@ export interface TableViewConfig<T = any> {
   filterable?: boolean;
   /** Mostra colonna azioni (default: false) */
   showActions?: boolean;
+    /** Custom buttons */
+  customBtns?: Array<{ action: string, label: string; tooltip: string, icon: string }>;
 }

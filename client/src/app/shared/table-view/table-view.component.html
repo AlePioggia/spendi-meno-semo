@@ -115,6 +115,16 @@
         </span>
     </td>
     <td class="actions-cell" *ngIf="config.showActions">
+          <button *ngFor="let btn of config.customBtns"
+            mat-icon-button
+            (click)="onRowAction(btn.action, row)"
+            aria-label="{{ btn.label }}"
+            matTooltip="{{ btn.tooltip }}"
+            matTooltipPosition="left"
+            matTooltipShowDelay="250"
+          > 
+            <mat-icon>{{ btn.icon }}</mat-icon>
+          </button>
           <button
             mat-icon-button
             (click)="onRowAction('edit', row)"

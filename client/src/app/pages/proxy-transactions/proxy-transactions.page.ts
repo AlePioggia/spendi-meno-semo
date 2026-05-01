@@ -15,7 +15,7 @@ import { TableViewComponent } from '../../shared/table-view/table-view.component
 import { TableViewConfig } from '../../shared/table-view/table-column.interface';
 import { TransactionService } from '../../services/transaction.service';
 import { CategoryService } from '../../services/category.service';
-import { TransactionType, TransactionResponseDto } from '../../interfaces/transaction.interface';
+import { TransactionType, TransactionResponseDto, UpdateTransactionRequestDto } from '../../interfaces/transaction.interface';
 import { CategoryResponseDto } from '../../interfaces/category.interface';
 import {
   TransactionCreateDialog,
@@ -114,7 +114,10 @@ export class ProxyTransactionsPage {
     },
     sortable: true,
     filterable: true,
-    showActions: true
+    showActions: true,
+    customBtns: [
+      { action: 'abilitate', label: 'Abilita', tooltip: 'Rendi la transazione effettiva' , icon: 'double_arrow' }
+    ]
   };
 
   constructor() {
@@ -161,7 +164,31 @@ export class ProxyTransactionsPage {
       this.openEditDialog(row);
     } else if (action === 'delete') {
       this.deleteTransaction(row.id);
+    } else if (action === 'abilitate') {
+      this.abilitateTransaction(row.id, row);
     }
+  }
+
+  abilitateTransaction(id: number, row: TransactionResponseDto) {
+    let r: UpdateTransactionRequestDto = {
+        id: row.id,
+        amount: row.amount,
+        categoryId: row.categoryId,
+        date: row.date.toString() ?? '',
+        description: row.description,
+        transactionType: row.expenseType,
+        currency: 'EUR',
+        isProxyTransaction: false
+      }
+      this.transactionsService.updateTransaction(row.id, r).subscribe({
+        next: () => {
+          this.loadTransactions();
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        }
+      });
   }
 
   openEditDialog(tx: TransactionResponseDto) {
