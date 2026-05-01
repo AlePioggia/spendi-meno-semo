@@ -35,6 +35,7 @@ namespace Expenses.Infrastructure.repositories
         {
             return await _dbContext.Set<RecurringOperation>()
                 .IgnoreQueryFilters()
+                .Where(x => x.Status == 0)
                 .Include(x => x.Template)
                 .Where(x => x.Template.Status == 0)
                 .Include(x => x.Category)
@@ -63,6 +64,7 @@ namespace Expenses.Infrastructure.repositories
         public async Task<List<RecurringOperation>> GetElegibleOperationsByFrequency(RecurringOperationFrequency frequency)
         {
             return await _dbContext.Set<RecurringOperation>()
+                .Where(x => x.Status == 0)
                 .Include(x => x.Template)
                 .Include(x => x.Category)
                 .Include(x => x.Transactions)
