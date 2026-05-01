@@ -143,7 +143,7 @@
     <tfoot *ngIf="config.summaryField">
       <tr class="totals">
         <td [attr.colspan]="columns.length - 1">Totale (filtrato)</td>
-        <td>{{ summary() | number:'1.2-2' }}</td>
+        <td>{{ summary() | number:'1.2-2' }} €</td>
         <td *ngIf="config.showActions"></td>
       </tr>
     </tfoot>

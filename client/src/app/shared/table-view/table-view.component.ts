@@ -63,7 +63,7 @@ export class TableViewComponent<T = any> implements OnInit {
         if (col.type === 'string') {
           const normalizedFilter = String(filter ?? '').toLowerCase().trim();
           if (!normalizedFilter) return true;
-          const displayValue = this.formatValue(col, value);
+          const displayValue = this.formatValue(col, value, row);
           return displayValue.toLowerCase().includes(normalizedFilter);
         }
 
@@ -223,7 +223,7 @@ export class TableViewComponent<T = any> implements OnInit {
 
   formatRowValue(row: T, col: TableColumnConfig<T>): string {
     const value = (row as any)[col.key];
-    return this.formatValue(col, value);
+    return this.formatValue(col, value, row);
   }
 
   getCellClasses(row: T, col: TableColumnConfig<T>): Record<string, boolean> {
@@ -248,8 +248,8 @@ export class TableViewComponent<T = any> implements OnInit {
     return classes;
   }
 
-  formatValue(column: TableColumnConfig<T>, value: any): string {
-    if (column.formatter) return column.formatter(value);
+  formatValue(column: TableColumnConfig<T>, value: any, row: T): string {
+    if (column.formatter) return column.formatter(value, row);
     if (column.type === 'date') return this.formatDate(value);
     return String(value ?? '');
   }

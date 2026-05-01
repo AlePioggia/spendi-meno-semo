@@ -141,9 +141,10 @@ export class TransactionsPage {
         label: 'Importo',
         type: 'number',
         cellClassName: 'amount-cell',
-        formatter: (value) => {
+        formatter: (value, row?: TransactionResponseDto) => {
           const amount = Number(value);
-          return `${amount >= 0 ? '+' : '-'}${Math.abs(amount).toFixed(2)} €`;
+          const sign = row?.expenseType === 'Income' ? '+' : '-';
+          return `${sign}${Math.abs(amount).toFixed(2)} €`;
         }
       }
     ],

@@ -158,7 +158,7 @@
 
               <div class="tx-right">
                 <div class="amount" [class.income]="tx.expenseType === 'Income'" [class.expense]="tx.expenseType === 'Expense'">
-                  {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} {{ tx.currency }}
+                  {{ tx.expenseType === 'Expense' ? '-' : '+' }}{{ tx.amount | number:'1.2-2' }} €
                 </div>
                 <button
                   mat-icon-button

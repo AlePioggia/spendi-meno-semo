@@ -10,7 +10,7 @@ export interface TableColumnConfig<T = any> {
   /** CSS class per il th */
   className?: string;
   /** Formatter custom per visualizzare il valore */
-  formatter?: (value: any) => string;
+  formatter?: (value: any, row: T) => string;
   /** Per tipo 'enum': mappe tra valore e label */
   enumMap?: Record<string, string>;
   /** Classe CSS per l'elemento td */
