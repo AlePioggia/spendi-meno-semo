@@ -74,10 +74,10 @@ namespace Expenses.Application.Tests.queries.transactions
 
             var summarySheet = workbook.Worksheet("Summary");
             Assert.Contains("Overview", summarySheet.Cell("A4").GetString());
-            Assert.Contains("Monthly Totals", summarySheet.Cell("A6").GetString());
-            Assert.Contains("Category Totals", summarySheet.Cell("E6").GetString());
+            Assert.Contains(summarySheet.CellsUsed().Select(cell => cell.GetString()), value => value == "Monthly Totals");
+            Assert.Contains(summarySheet.CellsUsed().Select(cell => cell.GetString()), value => value == "Category Totals");
             Assert.DoesNotContain(workbook.Worksheet("Transactions").Row(1).CellsUsed(), cell => cell.GetString() == "Is Proxy");
-            Assert.NotEmpty(summarySheet.Pictures);
+            Assert.Empty(summarySheet.Pictures);
         }
     }
 }

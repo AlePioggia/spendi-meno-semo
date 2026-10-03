@@ -182,25 +182,9 @@ namespace Expenses.Infrastructure.services
                 .OrderByDescending(item => item.Total)
                 .FirstOrDefault();
 
-            summarySheet.Cell("A4").Value = "Overview";
-            summarySheet.Cell("A5").Value = "Total transactions";
-            summarySheet.Cell("B5").Value = totalTransactions;
-            summarySheet.Cell("A6").Value = "Monthly Totals";
-            summarySheet.Cell("A7").Value = "Income";
-            summarySheet.Cell("B7").Value = totalIncome;
-            summarySheet.Cell("A8").Value = "Expenses";
-            summarySheet.Cell("B8").Value = totalExpenses;
-            summarySheet.Cell("A9").Value = "Net";
-            summarySheet.Cell("B9").Value = net;
-            summarySheet.Cell("A10").Value = "Top category";
-            summarySheet.Cell("B10").Value = topCategory?.Name ?? "N/A";
-
-            summarySheet.Cell("A4").Style.Font.SetBold();
-            summarySheet.Cell("A5").Value = "Total transactions";
-            summarySheet.Cell("A7").Value = "Income";
-            summarySheet.Cell("A8").Value = "Expenses";
-            summarySheet.Cell("A9").Value = "Net";
-            summarySheet.Cell("A10").Value = "Top category";
+            var expenseTransactions = transactions
+                .Where(t => t.ExpenseType == TransactionType.Expense)
+                .ToList();
 
             var monthlyTotals = transactions
                 .GroupBy(transaction => new DateTime(transaction.Date.Year, transaction.Date.Month, 1))
@@ -214,6 +198,82 @@ namespace Expenses.Infrastructure.services
                           group.Where(t => t.ExpenseType == TransactionType.Expense).Sum(t => t.Amount?.Amount ?? 0m)
                 })
                 .ToList();
+
+            var monthlyExpenseValues = monthlyTotals.Select(x => x.Expenses).ToList();
+            var weeklyExpenseValues = expenseTransactions
+                .GroupBy(t => GetWeekStart(t.Date))
+                .Select(group => group.Sum(item => item.Amount?.Amount ?? 0m))
+                .ToList();
+            var dailyExpenseValues = expenseTransactions
+                .GroupBy(t => t.Date.Date)
+                .Select(group => group.Sum(item => item.Amount?.Amount ?? 0m))
+                .ToList();
+
+            var annualAverage = totalExpenses;
+            var annualMedian = totalExpenses;
+            var monthlyAverage = monthlyExpenseValues.Count == 0 ? 0m : monthlyExpenseValues.Average();
+            var monthlyMedian = monthlyExpenseValues.Count == 0 ? 0m : GetMedian(monthlyExpenseValues);
+            var weeklyAverage = weeklyExpenseValues.Count == 0 ? 0m : weeklyExpenseValues.Average();
+            var weeklyMedian = weeklyExpenseValues.Count == 0 ? 0m : GetMedian(weeklyExpenseValues);
+            var dailyAverage = dailyExpenseValues.Count == 0 ? 0m : dailyExpenseValues.Average();
+            var dailyMedian = dailyExpenseValues.Count == 0 ? 0m : GetMedian(dailyExpenseValues);
+
+            summarySheet.Cell("A4").Value = "Overview";
+            summarySheet.Cell("A5").Value = "Total transactions";
+            summarySheet.Cell("B5").Value = totalTransactions;
+            summarySheet.Cell("A6").Value = "Income";
+            summarySheet.Cell("B6").Value = totalIncome;
+            summarySheet.Cell("A7").Value = "Expenses";
+            summarySheet.Cell("B7").Value = totalExpenses;
+            summarySheet.Cell("A8").Value = "Net";
+            summarySheet.Cell("B8").Value = net;
+            summarySheet.Cell("A9").Value = "Top category";
+            summarySheet.Cell("B9").Value = topCategory?.Name ?? "N/A";
+
+            summarySheet.Cell("A4").Style.Font.SetBold();
+            summarySheet.Cell("A5").Value = "Total transactions";
+            summarySheet.Cell("A7").Value = "Income";
+            summarySheet.Cell("A8").Value = "Expenses";
+            summarySheet.Cell("A9").Value = "Net";
+            summarySheet.Cell("A10").Value = "Top category";
+
+            summarySheet.Cell("A19").Value = "Statistiche spesa";
+            summarySheet.Range("A19:E19").Merge();
+            summarySheet.Cell("A19").Style.Font.SetBold();
+            summarySheet.Cell("A19").Style.Fill.BackgroundColor = XLColor.FromHtml("#E2E8F0");
+            summarySheet.Cell("A19").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            summarySheet.Cell("A20").Value = "Periodo";
+            summarySheet.Cell("B20").Value = "Annuale";
+            summarySheet.Cell("C20").Value = "Mensile";
+            summarySheet.Cell("D20").Value = "Settimanale";
+            summarySheet.Cell("E20").Value = "Giornaliera";
+
+            summarySheet.Cell("A21").Value = "Media";
+            summarySheet.Cell("B21").Value = annualAverage;
+            summarySheet.Cell("C21").Value = monthlyAverage;
+            summarySheet.Cell("D21").Value = weeklyAverage;
+            summarySheet.Cell("E21").Value = dailyAverage;
+
+            summarySheet.Cell("A22").Value = "Mediana";
+            summarySheet.Cell("B22").Value = annualMedian;
+            summarySheet.Cell("C22").Value = monthlyMedian;
+            summarySheet.Cell("D22").Value = weeklyMedian;
+            summarySheet.Cell("E22").Value = dailyMedian;
+
+            summarySheet.Cell("A23").Value = "Distribuzione";
+            summarySheet.Cell("B23").Value = 1m;
+            summarySheet.Cell("C23").Value = totalExpenses == 0 ? 0m : monthlyAverage / totalExpenses;
+            summarySheet.Cell("D23").Value = totalExpenses == 0 ? 0m : weeklyAverage / totalExpenses;
+            summarySheet.Cell("E23").Value = totalExpenses == 0 ? 0m : dailyAverage / totalExpenses;
+
+            ApplyHeaderStyle(summarySheet, "A19:E19");
+            summarySheet.Range("A20:E22").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            summarySheet.Columns("B", "E").Style.NumberFormat.Format = "#,##0.00";
+            summarySheet.Cell("B23").Style.NumberFormat.Format = "0.00%";
+            summarySheet.Cell("C23").Style.NumberFormat.Format = "0.00%";
+            summarySheet.Cell("D23").Style.NumberFormat.Format = "0.00%";
+            summarySheet.Cell("E23").Style.NumberFormat.Format = "0.00%";
 
             summarySheet.Cell("D4").Value = "Month";
             summarySheet.Cell("E4").Value = "Expenses";
@@ -236,7 +296,6 @@ namespace Expenses.Infrastructure.services
             summarySheet.Cell("J4").Value = "Category";
             summarySheet.Cell("K4").Value = "Total";
             summarySheet.Cell("L4").Value = "Share %";
-            summarySheet.Cell("E6").Value = "Category Totals";
 
             var totalExpensesForCategories = totalExpenses;
             var categoryRows = categories
@@ -262,103 +321,11 @@ namespace Expenses.Infrastructure.services
 
             ApplyHeaderStyle(summarySheet, "J4:L4");
 
-            var monthlyChartBytes = CreateBarChartImage(
-                monthlyTotals.Select(item => item.Period.ToString("MMM")).ToList(),
-                monthlyTotals.Select(item => item.Expenses).ToList(),
-                "Expenses by month",
-                new[] { "Expenses" });
-
-            var monthlyPicture = summarySheet.AddPicture(new MemoryStream(monthlyChartBytes), XLPictureFormat.Png, "MonthlyTotalsChart");
-            monthlyPicture.MoveTo(summarySheet.Cell("D20"));
-            monthlyPicture.Scale(0.9);
-
-            var categoryChartBytes = CreateBarChartImage(
-                categoryRows.Select(item => item.Name).ToList(),
-                categoryRows.Select(item => item.Total).ToList(),
-                "Expense share by category",
-                new[] { "Categories" });
-
-            var categoryPicture = summarySheet.AddPicture(new MemoryStream(categoryChartBytes), XLPictureFormat.Png, "CategoryTotalsChart");
-            categoryPicture.MoveTo(summarySheet.Cell("J20"));
-            categoryPicture.Scale(0.9);
-
-            summarySheet.Column("D").Style.NumberFormat.Format = "MMM yyyy";
+            summarySheet.Range("D5:D14").Style.NumberFormat.Format = "MMM yyyy";
             summarySheet.Columns("E", "G").Style.NumberFormat.Format = "#,##0.00";
             summarySheet.Columns("J", "L").Style.NumberFormat.Format = "#,##0.00";
             summarySheet.Range("D5:G100").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             summarySheet.Columns().AdjustToContents();
-        }
-
-        private static byte[] CreateBarChartImage(IReadOnlyList<string> labels, IReadOnlyList<decimal> values, string title, IReadOnlyList<string> legendLabels)
-        {
-            if (labels.Count == 0 || values.Count == 0)
-            {
-                using var empty = new Image<Rgba32>(420, 220);
-                empty.Mutate(ctx => ctx.BackgroundColor(Color.White));
-                using var emptyStream = new MemoryStream();
-                empty.SaveAsPng(emptyStream);
-                return emptyStream.ToArray();
-            }
-
-            const int width = 420;
-            const int height = 220;
-            var image = new Image<Rgba32>(width, height);
-            var colors = new[]
-            {
-                Color.FromRgb(31, 119, 180),
-                Color.FromRgb(255, 127, 14),
-                Color.FromRgb(44, 160, 44),
-                Color.FromRgb(214, 39, 40),
-                Color.FromRgb(148, 103, 189),
-                Color.FromRgb(140, 86, 75)
-            };
-
-            image.Mutate(ctx =>
-            {
-                ctx.BackgroundColor(Color.White);
-
-                var maxValue = values.Max();
-                var plotLeft = 30f;
-                var plotTop = 25f;
-                var plotWidth = width - 80f;
-                var plotHeight = height - 70f;
-                var axisColor = Color.DarkGray;
-
-                ctx.Fill(axisColor, new RectangleF(plotLeft, plotTop + plotHeight, plotWidth, 2f));
-                ctx.Fill(axisColor, new RectangleF(plotLeft, plotTop, 2f, plotHeight));
-
-                var barStep = plotWidth / Math.Max(labels.Count, 1);
-                var barWidth = Math.Max(16f, (float)(barStep * 0.6));
-
-                for (var index = 0; index < labels.Count; index++)
-                {
-                    var value = values[index];
-                    var relativeHeight = maxValue <= 0 ? 0f : (float)(value / maxValue);
-                    var barHeight = relativeHeight * (plotHeight - 10);
-                    var x = plotLeft + index * barStep + ((barStep - barWidth) / 2f);
-                    var y = plotTop + plotHeight - barHeight;
-
-                    ctx.Fill(colors[index % colors.Length], new RectangleF(x, y, barWidth, barHeight));
-                }
-
-                var chartFont = GetChartFont();
-                if (chartFont is not null)
-                {
-                    ctx.DrawText(title, chartFont, Color.Black, new PointF(30f, 5f));
-
-                    var legendX = 300f;
-                    var legendY = 10f;
-                    for (var index = 0; index < legendLabels.Count; index++)
-                    {
-                        ctx.Fill(colors[index % colors.Length], new RectangleF(legendX, legendY + (index * 16), 10f, 10f));
-                        ctx.DrawText(legendLabels[index], chartFont, Color.Black, new PointF(legendX + 14f, legendY + (index * 16) - 2f));
-                    }
-                }
-            });
-
-            using var stream = new MemoryStream();
-            image.SaveAsPng(stream);
-            return stream.ToArray();
         }
 
         private static Font? GetChartFont()
@@ -381,6 +348,31 @@ namespace Expenses.Infrastructure.services
             }
 
             return fontFamily is not null ? new Font(fontFamily.Value, 12) : null;
+        }
+
+        private static DateTime GetWeekStart(DateTime date)
+        {
+            var day = date.DayOfWeek;
+            var offset = day == DayOfWeek.Sunday ? 6 : (int)day - 1;
+            return date.Date.AddDays(-offset);
+        }
+
+        private static decimal GetMedian(IReadOnlyCollection<decimal> values)
+        {
+            if (values.Count == 0)
+            {
+                return 0m;
+            }
+
+            var ordered = values.OrderBy(value => value).ToList();
+            var middle = ordered.Count / 2;
+
+            if (ordered.Count % 2 == 0)
+            {
+                return (ordered[middle - 1] + ordered[middle]) / 2m;
+            }
+
+            return ordered[middle];
         }
 
         private static void ApplyHeaderStyle(IXLWorksheet sheet, string range)
