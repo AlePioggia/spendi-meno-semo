@@ -59,7 +59,30 @@ namespace Expenses.Api.controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("report")]
+        public async Task<IActionResult> GetTransactionsReportAsync()
+        {
+            try
+            {
+                var query = new GetTransactionsReportQuery();
+                var report = await _mediator.Send(query);
+
+                return File(
+                    report,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"transactions-report-{DateTime.UtcNow:yyyyMMddHHmmss}.xlsx");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new { Errors = ex.Errors.Select(e => e.ErrorMessage) });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<GetTransactionResponseDto>> GetTransactionAsync(int id)
         {
             try

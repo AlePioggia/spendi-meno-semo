@@ -13,6 +13,21 @@
 
       <div class="header-actions">
         <button
+          mat-stroked-button
+          color="primary"
+          type="button"
+          (click)="downloadReport()"
+          [disabled]="reportLoading() || loading()"
+          aria-label="Scarica report Excel"
+          matTooltip="Scarica report Excel"
+          matTooltipPosition="below"
+          matTooltipShowDelay="250"
+        >
+          <mat-icon>{{ reportLoading() ? 'hourglass_top' : 'download' }}</mat-icon>
+          <span>{{ reportLoading() ? 'Generazione...' : 'Download report' }}</span>
+        </button>
+
+        <button
           mat-icon-button
           (click)="prevMonth()"
           aria-label="Mese precedente"

@@ -18,6 +18,12 @@ export class TransactionService {
     return this.http.get<TransactionResponseDto[]>(this.apiUrl);
   }
 
+  downloadReport(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/report`, {
+      responseType: 'blob'
+    });
+  }
+
   getTransactionById(id: number): Observable<TransactionResponseDto> {
     return this.http.get<TransactionResponseDto>(`${this.apiUrl}/${id}`);
   }

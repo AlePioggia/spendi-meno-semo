@@ -80,6 +80,7 @@ export class TransactionsPage {
 
   month = signal(new Date(this.today.getFullYear(), this.today.getMonth(), 1));
   loading = signal(false);
+  reportLoading = signal(false);
 
   tableView = signal(false);
   showOnlyDaysWithTransactions = signal(false);
@@ -489,6 +490,28 @@ export class TransactionsPage {
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
+    });
+  }
+
+  downloadReport() {
+    this.reportLoading.set(true);
+
+    this.transactionService.downloadReport().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `transactions-report-${new Date().toISOString().slice(0, 10)}.xlsx`;
+        anchor.style.display = 'none';
+        document.body.appendChild(anchor);
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(anchor);
+        this.reportLoading.set(false);
+      },
+      error: () => {
+        this.reportLoading.set(false);
+      }
     });
   }
 
